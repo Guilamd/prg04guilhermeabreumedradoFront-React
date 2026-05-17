@@ -1,0 +1,212 @@
+/* Auth Layout */
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, #1a2926 0%, var(--bg-dark) 50%);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-container .logo {
+    margin-bottom: 2rem;
+}
+
+.auth-container .logo h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.auth-container .logo span {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+}
+
+.login-card {
+    width: 100%;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.login-card .subtexto {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.test-credentials {
+    background-color: rgba(0, 255, 204, 0.05);
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Form Styles */
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    background-color: #151515;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 255, 204, 0.1);
+}
+
+.erro {
+    display: none;
+    color: var(--accent-red);
+    font-size: 0.8rem;
+}
+
+.login-erro-geral {
+    display: none;
+    color: var(--accent-red);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+    background-color: rgba(255, 51, 102, 0.1);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 51, 102, 0.2);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--neon-cyan);
+    color: var(--bg-dark);
+    box-shadow: 0 4px 15px rgba(0, 255, 204, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #00e6b8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 204, 0.3);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* Admin specific */
+.admin-avatar {
+    background: linear-gradient(135deg, #ff3366, #ff9933);
+}
+
+.badge {
+    font-size: 0.7rem;
+    background-color: rgba(255, 51, 102, 0.1);
+    color: var(--accent-red);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    border: 1px solid rgba(255, 51, 102, 0.2);
+}
+
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background-color: rgba(57, 255, 20, 0.1);
+    color: var(--neon-green);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.status-badge.inactive {
+    background-color: rgba(160, 160, 160, 0.1);
+    color: var(--text-muted);
+    border: 1px solid rgba(160, 160, 160, 0.2);
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn.edit:hover {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.action-btn.delete:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}

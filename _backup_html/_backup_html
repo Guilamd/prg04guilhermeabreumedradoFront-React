@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech - Gestão Financeira Pessoal</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Fin<span>Tech</span></h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">💳</span> Carteiras
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">💸</span> Transações
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🎯</span> Metas
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚙️</span> Configurações
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="greeting">
+                    <h2 id="greetingName">Bem-vindo(a)!</h2>
+                    <p id="greetingSub">Faça login para gerenciar suas finanças.</p>
+                </div>
+                <div class="user-profile" style="position: relative;">
+                    <div class="avatar" id="userAvatar" style="cursor: pointer;">GA</div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="login.html" class="dropdown-item">Fazer Login</a>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid" id="dashboardData">
+                <!-- Hero Card -->
+                <article class="card hero-card">
+                    <h3>Saldo Total Consolidado</h3>
+                    <div class="balance-amount" id="totalBalance">R$ 0,00</div>
+                    <span class="trend" id="balanceTrend" style="color: var(--text-muted);">Conecte suas contas bancárias</span>
+                </article>
+
+                <!-- Wallets Section -->
+                <section class="wallets-section">
+                    <div class="wallets-section-header">
+                        <h3>Minhas Carteiras</h3>
+                        <div class="wallet-controls" id="walletControls" style="display: none;">
+                            <button class="scroll-btn" id="btnScrollLeft" aria-label="Rolar Esquerda">❮</button>
+                            <button class="scroll-btn" id="btnScrollRight" aria-label="Rolar Direita">❯</button>
+                        </div>
+                    </div>
+                    <div class="wallets-grid" id="walletsGrid">
+                        <div class="card wallet-card" style="align-items: center; justify-content: center; text-align: center; border-style: dashed; opacity: 0.7; width: 100%;">
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma carteira conectada.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cash Flow Placeholder -->
+                <section class="card cash-flow-card">
+                    <h3>Fluxo de Caixa (Evolução)</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-mockup" style="background: none; border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; box-shadow: none;">
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Sem dados suficientes</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Activities -->
+                <section class="card recent-activities-card">
+                    <h3>Atividades Recentes</h3>
+                    <div class="table-responsive">
+                        <table class="activities-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Categoria</th>
+                                    <th>Descrição</th>
+                                    <th class="align-right">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                        Nenhuma transação encontrada. Faça login para sincronizar dados.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Interatividade do Avatar
+        const userAvatar = document.getElementById('userAvatar');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Lógica de Autenticação Visual (Mock)
+        const loggedUser = localStorage.getItem('user');
+        const dashboardData = document.getElementById('dashboardData');
+
+        // Scroll Logic for Wallets
+        const btnScrollLeft = document.getElementById('btnScrollLeft');
+        const btnScrollRight = document.getElementById('btnScrollRight');
+        const walletsGridObj = document.getElementById('walletsGrid');
+
+        if (btnScrollLeft && btnScrollRight && walletsGridObj) {
+            btnScrollLeft.addEventListener('click', () => {
+                walletsGridObj.scrollBy({ left: -240, behavior: 'smooth' });
+            });
+            btnScrollRight.addEventListener('click', () => {
+                walletsGridObj.scrollBy({ left: 240, behavior: 'smooth' });
+            });
+        }
+
+        if (loggedUser === 'Guilherme' || loggedUser === 'Admin') {
+            document.getElementById('greetingName').textContent = 'Olá, Guilherme!';
+            document.getElementById('greetingSub').textContent = 'Aqui está o seu resumo financeiro consolidado.';
+            userAvatar.textContent = 'GA';
+            userAvatar.style.background = 'linear-gradient(135deg, var(--neon-cyan), #0088ff)';
+            
+            // Mostrar os dados reais do mock
+            document.getElementById('totalBalance').textContent = 'R$ 14.502,80';
+            const trend = document.getElementById('balanceTrend');
+            trend.textContent = '+ 4.5% este mês';
+            trend.style.color = '';
+            trend.className = 'trend positive';
+
+            document.getElementById('walletsGrid').innerHTML = `
+                <div class="card wallet-card">
+                    <span class="wallet-name">Nubank</span>
+                    <span class="wallet-balance">R$ 8.230,00</span>
+                </div>
+                <div class="card wallet-card">
+                    <span class="wallet-name">Itaú</span>
+                    <span class="wallet-balance">R$ 5.150,50</span>
+                </div>
+                <div class="card wallet-card">
+                    <span class="wallet-name">Dinheiro Físico</span>
+                    <span class="wallet-balance">R$ 1.122,30</span>
+                </div>
+                <div class="card wallet-card">
+                    <span class="wallet-name">Bradesco</span>
+                    <span class="wallet-balance">R$ 3.400,00</span>
+                </div>
+                <div class="card wallet-card">
+                    <span class="wallet-name">XP Investimentos</span>
+                    <span class="wallet-balance">R$ 12.000,00</span>
+                </div>
+                <div class="card wallet-card">
+                    <span class="wallet-name">Inter</span>
+                    <span class="wallet-balance">R$ 1.800,00</span>
+                </div>
+            `;
+            
+            const walletControls = document.getElementById('walletControls');
+            if (walletControls) {
+                walletControls.style.display = 'flex';
+            }
+
+            // Restaurar gráfico mockado
+            const chartMockup = document.querySelector('.chart-mockup');
+            chartMockup.style.background = 'linear-gradient(180deg, rgba(0, 255, 204, 0.2) 0%, transparent 100%)';
+            chartMockup.style.border = 'none';
+            chartMockup.style.borderTop = '2px solid var(--neon-cyan)';
+            chartMockup.style.boxShadow = '0 -5px 15px rgba(0, 255, 204, 0.1)';
+            chartMockup.innerHTML = '';
+
+            document.getElementById('transactionsTableBody').innerHTML = `
+                <tr>
+                    <td>29 Abr 2026</td>
+                    <td>Salário</td>
+                    <td>Recebimento Empresa X</td>
+                    <td class="align-right amount positive">+ R$ 6.500,00</td>
+                </tr>
+                <tr>
+                    <td>28 Abr 2026</td>
+                    <td>Alimentação</td>
+                    <td>Mercado Y</td>
+                    <td class="align-right amount negative">- R$ 450,00</td>
+                </tr>
+                <tr>
+                    <td>26 Abr 2026</td>
+                    <td>Transporte</td>
+                    <td>Uber</td>
+                    <td class="align-right amount negative">- R$ 35,50</td>
+                </tr>
+                <tr>
+                    <td>25 Abr 2026</td>
+                    <td>Investimentos</td>
+                    <td>CDB Banco Z</td>
+                    <td class="align-right amount positive">+ R$ 1.000,00</td>
+                </tr>
+                <tr>
+                    <td>22 Abr 2026</td>
+                    <td>Lazer</td>
+                    <td>Cinema</td>
+                    <td class="align-right amount negative">- R$ 80,00</td>
+                </tr>
+            `;
+
+            // Montar menu de perfil para logado
+            profileDropdown.innerHTML = `
+                <div class="dropdown-header" style="padding: 0.5rem 1.2rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; line-height: 1.4;">
+                    <strong style="color: var(--text-main);">Guilherme Medrado</strong><br>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">gui@email.com</span>
+                </div>
+                <a href="#" class="dropdown-item">👤 Editar Perfil</a>
+                <a href="#" class="dropdown-item">🌓 Alternar Tema</a>
+                <div style="border-top: 1px solid var(--border-color); margin: 0.5rem 0;"></div>
+                <a href="#" class="dropdown-item">❓ Suporte e Ajuda</a>
+                <div style="border-top: 1px solid var(--border-color); margin: 0.5rem 0;"></div>
+                <a href="#" id="logoutBtn" class="dropdown-item" style="color: var(--accent-red);">🚪 Sair</a>
+            `;
+            
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                window.location.reload();
+            });
+        } else {
+            // Estado deslogado (Empty State)
+            document.getElementById('greetingName').textContent = 'Bem-vindo(a) ao FinTech!';
+            document.getElementById('greetingSub').textContent = 'Conecte suas contas para gerenciar suas finanças.';
+            userAvatar.innerHTML = '&#128100;'; // Icone de usuario generico
+            userAvatar.style.background = 'var(--bg-panel-hover)';
+            
+            // Menu para fazer login
+            profileDropdown.innerHTML = '<a href="login.html" class="dropdown-item">Fazer Login</a>';
+        }
+    </script>
+</body>
+</html>

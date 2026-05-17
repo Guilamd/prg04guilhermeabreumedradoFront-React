@@ -1,0 +1,110 @@
+/* Estrutura Principal */
+.app-container {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    margin-bottom: 3rem;
+}
+
+.sidebar .logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.sidebar .logo span {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+}
+
+/* Main Content */
+.main-content {
+    padding: 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-header .greeting h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.top-header .greeting p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hero-card {
+        grid-column: 1 / -1;
+    }
+    
+    .wallets-section {
+        grid-column: 1 / -1;
+    }
+    
+    .cash-flow-card {
+        grid-column: 1 / -1;
+    }
+    
+    .recent-activities-card {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Responsividade Básica */
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none; /* Para fins de mock simplificado */
+    }
+    
+    .main-content {
+        padding: 1.5rem;
+    }
+}
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+}
+

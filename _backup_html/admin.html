@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech - Painel Administrativo</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar do Admin -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Fin<span>Tech</span> <span class="badge">Admin</span></h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="icon">👥</span> Usuários
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚙️</span> Configurações
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📈</span> Relatórios Globais
+                </a>
+                <a href="login.html" class="nav-item" style="margin-top: auto; color: var(--accent-red); background: rgba(255, 51, 102, 0.05); border-left: 3px solid var(--accent-red);">
+                    <span class="icon">🚪</span> Sair do Painel
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="greeting">
+                    <h2>Painel Administrativo</h2>
+                    <p>Gerencie os usuários e permissões do sistema Fintech.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar admin-avatar">AD</div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <!-- Tabela de Usuários (Admin) -->
+                <section class="card admin-table-card" style="grid-column: 1 / -1;">
+                    <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Usuários Cadastrados</h3>
+                        <button class="btn btn-primary btn-sm">+ Novo Usuário</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="activities-table admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Status</th>
+                                    <th class="align-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Guilherme Medrado</td>
+                                    <td>guilherme@fintech.com</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td class="align-right">
+                                        <button class="action-btn edit">Editar</button>
+                                        <button class="action-btn delete">Excluir</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Ana Carolina Silva</td>
+                                    <td>ana.silva@fintech.com</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td class="align-right">
+                                        <button class="action-btn edit">Editar</button>
+                                        <button class="action-btn delete">Excluir</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Lucas Oliveira</td>
+                                    <td>lucas.oliveira@fintech.com</td>
+                                    <td><span class="status-badge inactive">Inativo</span></td>
+                                    <td class="align-right">
+                                        <button class="action-btn edit">Editar</button>
+                                        <button class="action-btn delete">Excluir</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Mariana Costa</td>
+                                    <td>mariana.costa@fintech.com</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td class="align-right">
+                                        <button class="action-btn edit">Editar</button>
+                                        <button class="action-btn delete">Excluir</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Pedro Santos</td>
+                                    <td>pedro.santos@fintech.com</td>
+                                    <td><span class="status-badge inactive">Inativo</span></td>
+                                    <td class="align-right">
+                                        <button class="action-btn edit">Editar</button>
+                                        <button class="action-btn delete">Excluir</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

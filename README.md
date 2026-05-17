@@ -1,36 +1,46 @@
-🎬 CinePrime | Plataforma de Cinema
+# 🏦 FinTech | Gestão Financeira Pessoal
 
-O CinePrime é uma aplicação web para um cinema local, onde o usuário pode comprar ingressos, ver o que está em cartaz e montar combos clássicos de forma prática.
+O **FinTech** é uma aplicação web de gestão financeira pessoal focada em automação e consolidação de múltiplas contas, onde o usuário pode ter clareza total de suas entradas e saídas em um único painel.
 
-Este projeto está sendo desenvolvido para a disciplina de Web, com o objetivo de construir uma aplicação completa ao longo do semestre.
+Este projeto está sendo desenvolvido para a disciplina de **Programação Web (PRG04)**, com o objetivo de construir uma aplicação completa ao longo do semestre.
 
-📂 ESTRUTURA DO PROJETO
+---
 
-INFRAESTRUCTURE:
-Parte onde ficam os arquivos principais e recursos usados no projeto inteiro.
+## 🛠️ Tecnologias
 
-/ASSETS
+- **React 19** + **Vite 8**
+- **React Router DOM** (navegação SPA)
+- **CSS modular** (Dark Mode, Neon theme)
 
-CSS/ -> Arquivos de estilização do site (Layout, cores, fontes)
+## 📂 Estrutura do Projeto
 
-FONTS/ -> Fontes personalizadas utilizadas no projeto
+```
+├── _backup_html/          → Arquivos HTML antigos (referência)
+├── public/                → Assets estáticos (favicon, ícones)
+├── src/
+│   ├── assets/            → Imagens importadas pelo código
+│   ├── components/        → Componentes reutilizáveis (Header, Sidebar, Cards...)
+│   ├── contexts/          → Contexts do React (AuthContext)
+│   ├── css/               → Estilos modulares (global, layout, components, auth)
+│   ├── pages/             → Páginas/Rotas (Dashboard, Login)
+│   ├── App.jsx            → Componente principal + rotas
+│   ├── App.css            → Estilos do App
+│   ├── main.jsx           → Entry point do React
+│   └── index.css          → Estilos globais base
+├── index.html             → HTML entry point do Vite
+├── package.json
+├── vite.config.js
+└── eslint.config.js
+```
 
-IMAGES/ -> Imagens de produtos, ícones e favicon
+## 🚀 Como Rodar
 
-JS/ -> Scripts JavaScript para interatividade (carrinho, validações)
+```bash
+npm install
+npm run dev
+```
 
-/PAGES
+## 📝 Notas
 
-ABOUT/ -> Página "Sobre o CinePrime"
-
-CONTACTS/ -> Página de contato e suporte
-
-CATALOG/ -> Catálogo de filmes e sessões
-
-CART/ -> Carrinho de compras e finalização de pedido
-
-INDEX.HTML -> Página inicial do projeto (CinePrime).
-
-SANDBOX.HTML -> Espaço de experimentação com audio, video e estrutura de blocos
-
-PALETAS.HTML -> Definição da paleta visual e identidade do projeto
+- Os arquivos HTML originais estão preservados em `_backup_html/` para referência.
+- O sistema de autenticação é mockado via `localStorage`.

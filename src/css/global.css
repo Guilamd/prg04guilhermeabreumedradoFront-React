@@ -1,0 +1,49 @@
+/* Variáveis de Tema (Dark Mode e Neon) */
+:root {
+    --bg-dark: #121212;
+    --bg-panel: #1A1A1A;
+    --bg-panel-hover: #222222;
+    
+    --text-main: #FFFFFF;
+    --text-muted: #A0A0A0;
+    
+    --neon-cyan: #00ffcc;
+    --neon-green: #39ff14;
+    --accent-red: #ff3366;
+    
+    --border-color: #2a2a2a;
+    
+    --font-family: 'Inter', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Utilitários */
+.align-right {
+    text-align: right;
+}
+
+.amount.positive {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 255, 204, 0.4);
+}
+
+.amount.negative {
+    color: var(--text-muted);
+}

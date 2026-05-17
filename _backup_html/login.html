@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech - Login</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-body">
+    <main class="auth-container">
+        <div class="logo">
+            <h1>Fin<span>Tech</span></h1>
+        </div>
+        
+        <section class="card login-card">
+            <h2>Acessar Painel</h2>
+            <p class="subtexto">Preencha seus dados para entrar no sistema.</p>
+            
+            <div class="test-credentials">
+                <strong>Usuário:</strong> user@fintech.com | 1234 <br>
+                <strong style="margin-top: 5px; display: inline-block;">Admin:</strong> admin@fintech.com | 1234
+            </div>
+
+            <form id="formLogin" novalidate class="auth-form">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="user@fintech.com" required>
+                    <span class="erro" id="erroEmail">Informe um e-mail válido.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="••••" required minlength="4">
+                    <span class="erro" id="erroSenha">A senha é obrigatória (mínimo 4 caracteres).</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+
+                <p class="login-erro-geral" id="erroGeral">E-mail ou senha incorretos. Tente novamente.</p>
+            </form>
+        </section>
+        
+        <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+            <a href="index.html" style="text-decoration: underline;">Voltar para Início (Mock)</a>
+        </div>
+    </main>
+
+    <script>
+        var form = document.getElementById("formLogin");
+        var erroGeral = document.getElementById("erroGeral");
+
+        form.addEventListener("submit", function (evento) {
+            evento.preventDefault();
+            erroGeral.style.display = "none";
+
+            var email = document.getElementById("email");
+            var senha = document.getElementById("senha");
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Autenticação mockada
+            if ((email.value === "admin@fintech.com" || email.value === "admin@cineprime.com") && senha.value === "1234") {
+                localStorage.setItem('user', 'Admin');
+                window.location.href = "admin.html";
+            } else if (email.value === "user@fintech.com" && senha.value === "1234") {
+                localStorage.setItem('user', 'Guilherme');
+                window.location.href = "index.html"; // Dashboard do usuário comum
+            } else {
+                erroGeral.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
