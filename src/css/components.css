@@ -190,7 +190,7 @@
     z-index: 100;
 }
 
-.user-profile:hover .profile-dropdown {
+.profile-dropdown.open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -203,6 +203,15 @@
     text-decoration: none;
     font-size: 0.9rem;
     transition: background-color 0.2s;
+}
+
+button.dropdown-item {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-family);
+    cursor: pointer;
 }
 
 .dropdown-item:hover {
@@ -269,4 +278,17 @@
 
 .activities-table tbody tr:hover {
     background-color: rgba(255,255,255,0.02);
+}
+
+/* Valores de receita e despesa */
+.income {
+    color: var(--neon-green);
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+.expense {
+    color: var(--accent-red);
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(255, 51, 102, 0.3);
 }

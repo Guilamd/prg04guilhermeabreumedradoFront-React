@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 function WalletsSection() {
   const { user } = useAuth();
+  const gridRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (gridRef.current) {
+      gridRef.current.scrollBy({ left: -240, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (gridRef.current) {
+      gridRef.current.scrollBy({ left: 240, behavior: 'smooth' });
+    }
+  };
 
   return (
     <section className="wallets-section">
@@ -10,12 +23,12 @@ function WalletsSection() {
         <h3>Minhas Carteiras</h3>
         {user && (
           <div className="wallet-controls" id="walletControls">
-            <button className="scroll-btn" id="btnScrollLeft" aria-label="Rolar Esquerda">❮</button>
-            <button className="scroll-btn" id="btnScrollRight" aria-label="Rolar Direita">❯</button>
+            <button className="scroll-btn" id="btnScrollLeft" aria-label="Rolar Esquerda" onClick={scrollLeft}>❮</button>
+            <button className="scroll-btn" id="btnScrollRight" aria-label="Rolar Direita" onClick={scrollRight}>❯</button>
           </div>
         )}
       </div>
-      <div className="wallets-grid" id="walletsGrid">
+      <div className="wallets-grid" id="walletsGrid" ref={gridRef}>
         {user ? (
           <>
             <div className="card wallet-card">
