@@ -6,6 +6,7 @@ import AdminRoute from './components/AdminRoute';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+import Carteiras from './pages/Carteiras';
 
 function App() {
   return (
@@ -17,11 +18,11 @@ function App() {
       <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        {/* Outras páginas com o mesmo layout podem ser adicionadas aqui no futuro */}
-        {/* Ex: <Route path="carteiras" element={<Carteiras />} /> */}
+        <Route path="carteiras" element={<Carteiras />} />
       </Route>
     </Routes>
   );
 }
 
 export default App;
+// Force HMR

@@ -2,12 +2,10 @@ import React from 'react';
 
 function CashFlowCard() {
   return (
-    <section className="card cash-flow-card">
-      <h3>Fluxo de Caixa (Evolução)</h3>
-      <div className="chart-placeholder">
-        <div className="chart-mockup" style={{ background: 'none', border: '1px dashed var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Sem dados suficientes</span>
-        </div>
+    <section className="glass-card col-span-8">
+      <h3 style={{ marginBottom: '24px' }}>Evolução do Fluxo de Caixa</h3>
+      <div className="chart-placeholder" style={{ height: '300px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px dashed var(--surface-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="text-muted">Sem dados suficientes para gerar o gráfico</span>
       </div>
     </section>
   );

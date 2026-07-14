@@ -9,7 +9,9 @@ function Layout() {
       <Sidebar />
       <main className="main-content">
         <Header />
-        <Outlet /> {/* As páginas aninhadas serão renderizadas aqui */}
+        <div className="dashboard-content">
+          <Outlet /> {/* As páginas aninhadas serão renderizadas aqui */}
+        </div>
         <Footer />
       </main>
     </div>

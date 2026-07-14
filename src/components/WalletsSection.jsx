@@ -18,37 +18,47 @@ function WalletsSection() {
   };
 
   return (
-    <section className="wallets-section">
-      <div className="wallets-section-header">
+    <section className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3>Minhas Carteiras</h3>
         {user && (
-          <div className="wallet-controls" id="walletControls">
-            <button className="scroll-btn" id="btnScrollLeft" aria-label="Rolar Esquerda" onClick={scrollLeft}>❮</button>
-            <button className="scroll-btn" id="btnScrollRight" aria-label="Rolar Direita" onClick={scrollRight}>❯</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button className="btn-glass" onClick={scrollLeft} style={{ padding: '4px 12px' }}>❮</button>
+            <button className="btn-glass" onClick={scrollRight} style={{ padding: '4px 12px' }}>❯</button>
           </div>
         )}
       </div>
-      <div className="wallets-grid" id="walletsGrid" ref={gridRef}>
+      <div 
+        ref={gridRef}
+        style={{ 
+          display: 'flex', 
+          gap: '16px', 
+          overflowX: 'auto', 
+          paddingBottom: '8px',
+          scrollBehavior: 'smooth',
+          scrollbarWidth: 'none'
+        }}
+      >
         {user ? (
           <>
-            <div className="card wallet-card">
-              <div className="wallet-icon" style={{ background: '#4A90E2' }}>🏦</div>
-              <div className="wallet-info">
-                <h4>Banco Principal</h4>
-                <span>R$ 8.750,00</span>
+            <div className="glass-card" style={{ minWidth: '220px', display: 'flex', gap: '16px', alignItems: 'center', padding: '20px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(74, 144, 226, 0.2)', color: '#4A90E2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🏦</div>
+              <div>
+                <h4 style={{ margin: '0 0 4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Banco Principal</h4>
+                <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>R$ 8.750,00</span>
               </div>
             </div>
-            <div className="card wallet-card">
-              <div className="wallet-icon" style={{ background: '#50E3C2' }}>💳</div>
-              <div className="wallet-info">
-                <h4>Cartão de Crédito</h4>
-                <span>R$ 3.595,67</span>
+            <div className="glass-card" style={{ minWidth: '220px', display: 'flex', gap: '16px', alignItems: 'center', padding: '20px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(80, 227, 194, 0.2)', color: '#50E3C2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>💳</div>
+              <div>
+                <h4 style={{ margin: '0 0 4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Cartão de Crédito</h4>
+                <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>R$ 3.595,67</span>
               </div>
             </div>
           </>
         ) : (
-          <div className="card wallet-card" style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center', borderStyle: 'dashed', opacity: 0.7, width: '100%' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Nenhuma carteira conectada.</span>
+          <div className="glass-card" style={{ width: '100%', textAlign: 'center', padding: '32px', borderStyle: 'dashed' }}>
+            <span className="text-muted">Nenhuma carteira conectada.</span>
           </div>
         )}
       </div>

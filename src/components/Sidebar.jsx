@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { IconChart, IconCard, IconMoney, IconSettings, IconTarget, IconUsers } from './Icons';
 
 function Sidebar() {
   const { user } = useAuth();
@@ -8,29 +9,29 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="logo">
-        <h1>Fin<span>Tech</span> {user && user.name === 'Admin' && <span className="badge">Admin</span>}</h1>
+      <div className="sidebar-logo">
+        <h2>Fin<span className="text-emerald">Tech</span> {user && user.name === 'Admin' && <span style={{ fontSize: '0.8rem', background: 'var(--accent-rose)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Admin</span>}</h2>
       </div>
       <nav className="sidebar-nav">
-        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-          <span className="icon">📊</span> Dashboard
+        <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+          <span className="icon"><IconChart size={18} /></span> Dashboard
         </Link>
-        <a href="#" className="nav-item">
-          <span className="icon">💳</span> Carteiras
+        <Link to="/carteiras" className={`nav-link ${location.pathname === '/carteiras' ? 'active' : ''}`}>
+          <span className="icon"><IconCard size={18} /></span> Carteiras
+        </Link>
+        <a href="#" className="nav-link">
+          <span className="icon"><IconMoney size={18} /></span> Transações
         </a>
-        <a href="#" className="nav-item">
-          <span className="icon">💸</span> Transações
-        </a>
-        <a href="#" className="nav-item">
-          <span className="icon">🎯</span> Metas
+        <a href="#" className="nav-link">
+          <span className="icon"><IconTarget size={18} /></span> Metas
         </a>
         {user && user.name === 'Admin' && (
-          <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>
-            <span className="icon">👥</span> Admin: Usuários
+          <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
+            <span className="icon"><IconUsers size={18} /></span> Admin: Usuários
           </Link>
         )}
-        <a href="#" className="nav-item">
-          <span className="icon">⚙️</span> Configurações
+        <a href="#" className="nav-link">
+          <span className="icon"><IconSettings size={18} /></span> Configurações
         </a>
       </nav>
     </aside>
