@@ -19,12 +19,12 @@ function Sidebar() {
         <Link to="/carteiras" className={`nav-link ${location.pathname === '/carteiras' ? 'active' : ''}`}>
           <span className="icon"><IconCard size={18} /></span> Carteiras
         </Link>
-        <a href="#" className="nav-link">
+        <Link to="/transacoes" className={`nav-link ${location.pathname === '/transacoes' ? 'active' : ''}`}>
           <span className="icon"><IconMoney size={18} /></span> Transações
-        </a>
-        <a href="#" className="nav-link">
+        </Link>
+        <Link to="/metas" className={`nav-link ${location.pathname === '/metas' ? 'active' : ''}`}>
           <span className="icon"><IconTarget size={18} /></span> Metas
-        </a>
+        </Link>
         {user && user.name === 'Admin' && (
           <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
             <span className="icon"><IconUsers size={18} /></span> Admin: Usuários

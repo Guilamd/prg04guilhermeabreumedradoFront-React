@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Carteiras from './pages/Carteiras';
+import Transacoes from './pages/Transacoes';
+import Metas from './pages/Metas';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route index element={<Dashboard />} />
         <Route path="admin" element={<AdminRoute><Admin /></AdminRoute>} />
         <Route path="carteiras" element={<Carteiras />} />
+        <Route path="transacoes" element={<Transacoes />} />
+        <Route path="metas" element={<Metas />} />
       </Route>
     </Routes>
   );
