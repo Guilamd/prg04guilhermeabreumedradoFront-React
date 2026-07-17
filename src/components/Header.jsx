@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { IconBell } from './Icons';
 
@@ -8,6 +8,30 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const profileRef = useRef(null);
+  const location = useLocation();
+
+  // Define título e subtítulo com base na rota atual
+  const getPageInfo = () => {
+    const nome = user ? user.name.split(' ')[0] : '';
+    switch (location.pathname) {
+      case '/':
+        return { titulo: `Bem-vindo(a), ${nome}!`, subtitulo: 'Aqui está o resumo de suas finanças.' };
+      case '/carteiras':
+        return { titulo: 'Carteiras', subtitulo: 'Gerencie suas contas bancárias e cartões.' };
+      case '/transacoes':
+        return { titulo: 'Transações', subtitulo: 'Acompanhe seu extrato detalhado.' };
+      case '/metas':
+        return { titulo: 'Metas', subtitulo: 'Defina orçamentos e acompanhe seus gastos.' };
+      case '/configuracoes':
+        return { titulo: 'Configurações', subtitulo: 'Gerencie seu perfil e preferências.' };
+      case '/admin':
+        return { titulo: 'Administração', subtitulo: 'Painel de gerenciamento de usuários.' };
+      default:
+        return { titulo: `Olá, ${nome}!`, subtitulo: 'Navegue pelo menu lateral.' };
+    }
+  };
+
+  const { titulo, subtitulo } = getPageInfo();
 
   // Fecha os dropdowns ao clicar fora
   useEffect(() => {
@@ -24,17 +48,8 @@ function Header() {
   return (
     <header className="top-header">
       <div className="greeting">
-        {user ? (
-          <>
-            <h2>Bem-vindo(a), {user.name}!</h2>
-            <p>Aqui está o resumo de suas finanças.</p>
-          </>
-        ) : (
-          <>
-            <h2>Bem-vindo(a)!</h2>
-            <p>Faça login para gerenciar suas finanças.</p>
-          </>
-        )}
+        <h2>{titulo}</h2>
+        <p>{subtitulo}</p>
       </div>
       <div className="header-user" ref={profileRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '24px' }}>
         

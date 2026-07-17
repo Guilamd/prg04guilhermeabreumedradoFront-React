@@ -30,9 +30,9 @@ function Sidebar() {
             <span className="icon"><IconUsers size={18} /></span> Admin: Usuários
           </Link>
         )}
-        <a href="#" className="nav-link">
+        <Link to="/configuracoes" className={`nav-link ${location.pathname === '/configuracoes' ? 'active' : ''}`}>
           <span className="icon"><IconSettings size={18} /></span> Configurações
-        </a>
+        </Link>
       </nav>
     </aside>
   );

@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import Carteiras from './pages/Carteiras';
 import Transacoes from './pages/Transacoes';
 import Metas from './pages/Metas';
+import Configuracoes from './pages/Configuracoes';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="carteiras" element={<Carteiras />} />
         <Route path="transacoes" element={<Transacoes />} />
         <Route path="metas" element={<Metas />} />
+        <Route path="configuracoes" element={<Configuracoes />} />
       </Route>
     </Routes>
   );
