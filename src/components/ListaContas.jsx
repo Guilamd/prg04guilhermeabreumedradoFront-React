@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { IconBank, IconCard, IconSmartphone, IconMoreVertical, IconClose, IconMoney } from './Icons';
 
-function ListaContas() {
+function ListaContas({ contas = [] }) {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [menuOpen, setMenuOpen] = useState(null);
 
-  const contas = [
-    { id: 1, nome: 'Conta Santander', subtexto: 'Conta conectada', saldo: '1.486,45', color: '#EC0000', icon: <IconBank size={20} color="#fff" /> },
-    { id: 2, nome: 'Conta Caixa Econômica', subtexto: 'Conta manual', saldo: '5.468,99', color: '#185E9C', icon: <IconBank size={20} color="#fff" /> },
-    { id: 3, nome: 'Conta Inter', subtexto: 'Conta manual', saldo: '3.645,00', color: '#FF7A00', icon: <IconCard size={20} color="#fff" /> },
-    { id: 4, nome: 'Conta Nubank', subtexto: 'Conta conectada', saldo: '4.345,17', color: '#8A05BE', icon: <IconSmartphone size={20} color="#fff" /> },
-  ];
+  // Helper para renderizar o ícone com base na string
+  const renderIcon = (iconeName) => {
+    switch(iconeName) {
+      case 'card': return <IconCard size={20} color="#fff" />;
+      case 'smartphone': return <IconSmartphone size={20} color="#fff" />;
+      case 'bank':
+      default:
+        return <IconBank size={20} color="#fff" />;
+    }
+  };
 
   const handleMenuClick = (e, id) => {
     e.stopPropagation(); // Prevents opening the modal when clicking the 3 dots
@@ -31,8 +35,8 @@ function ListaContas() {
               onClick={() => setSelectedAccount(conta)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: conta.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {conta.icon}
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: conta.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
+                  {conta.icon ? conta.icon : renderIcon(conta.icone)}
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{conta.nome}</strong>

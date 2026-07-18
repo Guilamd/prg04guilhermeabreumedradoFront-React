@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { IconMoney, IconMoreVertical } from '../components/Icons';
+import Modal from '../components/Modal';
 
 function Transacoes() {
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
 
-  // Lançamentos mockados
-  const transacoes = [
+  // Lançamentos mockados no estado
+  const [transacoes, setTransacoes] = useState([
     { id: 1, data: '16 Jul', descricao: 'Salário mensal', categoria: 'Renda', conta: 'Conta Nubank', valor: '5.200,00', tipo: 'receita' },
     { id: 2, data: '15 Jul', descricao: 'Mercado Carrefour', categoria: 'Alimentação', conta: 'Cartão Inter', valor: '345,90', tipo: 'despesa' },
     { id: 3, data: '14 Jul', descricao: 'Netflix', categoria: 'Lazer', conta: 'Cartão Nubank', valor: '39,90', tipo: 'despesa' },
@@ -14,7 +15,52 @@ function Transacoes() {
     { id: 5, data: '10 Jul', descricao: 'Conta de Luz', categoria: 'Moradia', conta: 'Conta Caixa Econômica', valor: '185,40', tipo: 'despesa' },
     { id: 6, data: '05 Jul', descricao: 'Uber', categoria: 'Transporte', conta: 'Cartão XP', valor: '24,50', tipo: 'despesa' },
     { id: 7, data: '01 Jul', descricao: 'Rendimento CDI', categoria: 'Investimentos', conta: 'Conta Inter', valor: '12,45', tipo: 'receita' },
-  ];
+  ]);
+
+  // Estados do Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [novaDesc, setNovaDesc] = useState('');
+  const [novoValor, setNovoValor] = useState('');
+  const [novaData, setNovaData] = useState('');
+  const [novaCat, setNovaCat] = useState('');
+  const [novoTipo, setNovoTipo] = useState('despesa');
+
+  const formatarData = (dataStr) => {
+    if (dataStr.includes('/')) {
+      const partes = dataStr.split('/');
+      const dia = partes[0].padStart(2, '0'); // Garante 2 dígitos
+      const mesNum = parseInt(partes[1], 10);
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      if (mesNum >= 1 && mesNum <= 12) {
+        return `${dia} ${meses[mesNum - 1]}`;
+      }
+    }
+    return dataStr;
+  };
+
+  const handleSalvarTransacao = (e) => {
+    e.preventDefault();
+    if (!novaDesc || !novoValor || !novaData || !novaCat) return;
+
+    const novaTransacao = {
+      id: Date.now(),
+      data: formatarData(novaData),
+      descricao: novaDesc,
+      categoria: novaCat,
+      conta: 'Conta Manual',
+      valor: novoValor,
+      tipo: novoTipo
+    };
+
+    setTransacoes([novaTransacao, ...transacoes]);
+    setIsModalOpen(false);
+    
+    // Limpar form
+    setNovaDesc('');
+    setNovoValor('');
+    setNovaData('');
+    setNovaCat('');
+  };
 
   // Filtro simples no front-end para dar a sensação de funcionamento
   const transacoesFiltradas = transacoes.filter(t => {
@@ -30,7 +76,7 @@ function Transacoes() {
           <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Transações</h2>
           <p className="text-muted">Acompanhe seu extrato detalhado e encontre lançamentos específicos.</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
           + Novo Lançamento
         </button>
       </div>
@@ -114,7 +160,6 @@ function Transacoes() {
           )}
         </div>
         
-        {/* Paginação */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--surface-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span className="text-muted" style={{ fontSize: '0.85rem' }}>Mostrando {transacoesFiltradas.length} resultados</span>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -123,6 +168,62 @@ function Transacoes() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Nova Transação */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Novo Lançamento">
+        <form onSubmit={handleSalvarTransacao} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Tipo</label>
+              <select 
+                value={novoTipo} onChange={(e) => setNovoTipo(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }}
+              >
+                <option value="despesa">Despesa (Saída)</option>
+                <option value="receita">Receita (Entrada)</option>
+              </select>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Valor (R$)</label>
+              <input 
+                type="text" placeholder="0,00" value={novoValor} onChange={(e) => setNovoValor(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Descrição</label>
+            <input 
+              type="text" placeholder="Ex: Conta de Luz" value={novaDesc} onChange={(e) => setNovaDesc(e.target.value)}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Categoria</label>
+              <input 
+                type="text" placeholder="Ex: Moradia" value={novaCat} onChange={(e) => setNovaCat(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Data</label>
+              <input 
+                type="text" placeholder="Ex: 20 Jul" value={novaData} onChange={(e) => setNovaData(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="btn-primary" style={{ marginTop: '16px', padding: '14px', fontSize: '1rem', width: '100%' }}>
+            Adicionar Lançamento
+          </button>
+        </form>
+      </Modal>
+
     </section>
   );
 }

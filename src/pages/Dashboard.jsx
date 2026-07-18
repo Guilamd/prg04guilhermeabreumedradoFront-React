@@ -8,34 +8,36 @@ import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft } from '../com
 /* Card de Insight (Alerta inteligente) */
 function InsightCard({ user }) {
   return (
-    <article className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div>
-        <h3 style={{ color: 'var(--accent-emerald)', fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px', lineHeight: 1.4 }}>
-          Seu dinheiro pode trabalhar melhor por você.
+    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px', justifyContent: 'space-between' }}>
+      <div style={{ flex: 1 }}>
+        <h3 style={{ color: 'var(--accent-emerald)', fontSize: '1.6rem', fontWeight: '500', marginBottom: '12px', lineHeight: 1.2 }}>
+          Seu dinheiro está te esperando para uma conversa.
         </h3>
-        <p className="text-muted" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>
-          {user ? user.name.split(' ')[0] : 'Usuário'}, seus gastos subiram 12% comparado ao mês passado. Fique de olho!
+        <p className="text-muted" style={{ fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>
+          {user ? user.name.split(' ')[0] : 'Usuário'}, seus gastos de R$74 já são mais que o dobro do mês passado. Atenção!
         </p>
       </div>
 
       {/* 3 Mini Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginTop: '16px' }}>
-        <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
-          <span className="text-muted" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '4px' }}>Gasto em Julho</span>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>R$ 3.274</strong>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '12px' }}>
+        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Gasto em Julho</span>
+          <strong style={{ color: 'var(--text-primary)', fontSize: '1.2rem' }}>R$ 74</strong>
         </div>
-        <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
-          <span className="text-muted" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '4px' }}>vs. Mês Anterior</span>
-          <strong style={{ color: 'var(--accent-rose)', fontSize: '0.95rem' }}>↗ 12%</strong>
+        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>vs. Mês Anterior</span>
+          <strong style={{ color: 'var(--accent-rose)', fontSize: '1.1rem' }}>📉 173%</strong>
         </div>
-        <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
-          <span className="text-muted" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '4px' }}>Maior Gasto</span>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>Alimentação</strong>
+        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Maior Gasto</span>
+          <strong style={{ color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            💰 Transferências
+          </strong>
         </div>
       </div>
 
       {/* Rodapé do card */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--surface-border)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', paddingTop: '8px', borderTop: '1px solid var(--surface-border)' }}>
         <span className="text-muted" style={{ fontSize: '0.75rem' }}>FinTech</span>
         <span className="text-muted" style={{ fontSize: '0.75rem' }}>17 de jul. de 2026</span>
       </div>
@@ -59,7 +61,7 @@ function RitmoGastosCard() {
   }).join(' ');
 
   return (
-    <article className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
         <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Ritmo de Gastos</span>
         <Link to="/transacoes" style={{ color: 'var(--accent-emerald)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: '500' }}>ver todas ↗</Link>
@@ -76,7 +78,7 @@ function RitmoGastosCard() {
       </div>
 
       {/* Gráfico de Linha SVG */}
-      <div style={{ flex: 1, position: 'relative' }}>
+      <div style={{ flex: 1, position: 'relative', marginTop: '16px', minHeight: 0, overflow: 'hidden' }}>
         {/* Labels do eixo Y */}
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingRight: '8px' }}>
           {['R$ 4k', 'R$ 3k', 'R$ 2k', 'R$ 1k', 'R$ 0'].map((l, i) => (
@@ -89,14 +91,14 @@ function RitmoGastosCard() {
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
             {/* Linhas de grade horizontais */}
             {[0, 25, 50, 75, 100].map(y => (
-              <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" />
+              <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />
             ))}
             {/* Linha do mês passado (cinza, mais suave) */}
-            <path d="M 0 95 L 7 90 L 14 85 L 21 78 L 28 75 L 35 70 L 42 65 L 49 58 L 56 52 L 63 48 L 70 42 L 77 38 L 84 32 L 91 28 L 100 22" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" strokeDasharray="2,2" />
+            <path d="M 0 95 L 7 90 L 14 85 L 21 78 L 28 75 L 35 70 L 42 65 L 49 58 L 56 52 L 63 48 L 70 42 L 77 38 L 84 32 L 91 28 L 100 22" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="2,2" vectorEffect="non-scaling-stroke" />
             {/* Linha do mês atual (vermelha/coral) */}
-            <path d={pathD} fill="none" stroke="var(--accent-rose)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d={pathD} fill="none" stroke="var(--accent-rose)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
             {/* Ponto atual */}
-            <circle cx={stepX * (pontos.length - 1)} cy={100 - pontos[pontos.length - 1]} r="2.5" fill="var(--accent-rose)" />
+            <circle cx={stepX * (pontos.length - 1)} cy={100 - pontos[pontos.length - 1]} r="2.5" fill="var(--accent-rose)" vectorEffect="non-scaling-stroke" />
           </svg>
         </div>
 

@@ -4,6 +4,31 @@ import { IconBank } from '../components/Icons';
 
 function Carteiras() {
   const [showForm, setShowForm] = useState(false);
+  const [contas, setContas] = useState([
+    { id: 1, nome: 'Conta Santander', subtexto: 'Conta conectada', saldo: '1.486,45', color: '#EC0000', icone: 'bank' },
+    { id: 2, nome: 'Conta Caixa Econômica', subtexto: 'Conta manual', saldo: '5.468,99', color: '#185E9C', icone: 'bank' },
+    { id: 3, nome: 'Conta Inter', subtexto: 'Conta manual', saldo: '3.645,00', color: '#FF7A00', icone: 'card' },
+    { id: 4, nome: 'Conta Nubank', subtexto: 'Conta conectada', saldo: '4.345,17', color: '#8A05BE', icone: 'smartphone' },
+  ]);
+  
+  const [novaInstituicao, setNovaInstituicao] = useState('');
+  const [novoSaldo, setNovoSaldo] = useState('');
+
+  const handleSalvarConta = () => {
+    if (!novaInstituicao || !novoSaldo) return;
+    const nova = {
+      id: Date.now(),
+      nome: novaInstituicao,
+      subtexto: 'Conta manual',
+      saldo: novoSaldo,
+      color: '#8B5CF6',
+      icone: 'bank'
+    };
+    setContas([...contas, nova]);
+    setShowForm(false);
+    setNovaInstituicao('');
+    setNovoSaldo('');
+  };
 
   return (
     <section style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -27,13 +52,21 @@ function Carteiras() {
             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Nome da Instituição</label>
-                <input type="text" placeholder="Ex: Nubank, Itaú..." style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} />
+                <input 
+                  type="text" placeholder="Ex: Nubank, Itaú..." 
+                  value={novaInstituicao} onChange={(e) => setNovaInstituicao(e.target.value)}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
+                />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Saldo Inicial (R$)</label>
-                <input type="text" placeholder="0,00" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} />
+                <input 
+                  type="text" placeholder="0,00" 
+                  value={novoSaldo} onChange={(e) => setNovoSaldo(e.target.value)}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
+                />
               </div>
-              <button className="btn-primary" onClick={() => setShowForm(false)}>Salvar Conta</button>
+              <button className="btn-primary" onClick={handleSalvarConta}>Salvar Conta</button>
             </div>
           </div>
         )}
@@ -41,7 +74,7 @@ function Carteiras() {
         {/* Old Content (Contas + Open Finance) */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
           <div>
-            <ListaContas />
+            <ListaContas contas={contas} />
           </div>
           <div>
             <div className="glass-card" style={{ padding: '24px', textAlign: 'center', height: '100%' }}>
