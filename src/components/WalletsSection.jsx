@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { IconBank, IconCard } from './Icons';
 import { useAuth } from '../contexts/AuthContext';
 
 function WalletsSection() {
@@ -42,14 +43,14 @@ function WalletsSection() {
         {user ? (
           <>
             <div className="glass-card" style={{ minWidth: '220px', display: 'flex', gap: '16px', alignItems: 'center', padding: '20px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(74, 144, 226, 0.2)', color: '#4A90E2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🏦</div>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(74, 144, 226, 0.2)', color: '#4A90E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconBank size={24} /></div>
               <div>
                 <h4 style={{ margin: '0 0 4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Banco Principal</h4>
                 <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>R$ 8.750,00</span>
               </div>
             </div>
             <div className="glass-card" style={{ minWidth: '220px', display: 'flex', gap: '16px', alignItems: 'center', padding: '20px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(80, 227, 194, 0.2)', color: '#50E3C2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>💳</div>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(80, 227, 194, 0.2)', color: '#50E3C2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconCard size={24} /></div>
               <div>
                 <h4 style={{ margin: '0 0 4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Cartão de Crédito</h4>
                 <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>R$ 3.595,67</span>

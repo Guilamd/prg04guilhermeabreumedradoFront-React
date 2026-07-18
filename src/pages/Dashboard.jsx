@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft } from '../components/Icons';
+import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft, IconTrendingDown, IconTrendingUp } from '../components/Icons';
 
 /* ===================== COMPONENTES INTERNOS ===================== */
 
@@ -26,12 +26,14 @@ function InsightCard({ user }) {
         </div>
         <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>vs. Mês Anterior</span>
-          <strong style={{ color: 'var(--accent-rose)', fontSize: '1.1rem' }}>📉 173%</strong>
+          <strong style={{ color: 'var(--accent-rose)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <IconTrendingDown size={16} /> 173%
+          </strong>
         </div>
         <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Maior Gasto</span>
           <strong style={{ color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            💰 Transferências
+            <IconMoney size={16} color="var(--accent-emerald)" /> Transferências
           </strong>
         </div>
       </div>
@@ -62,20 +64,20 @@ function RitmoGastosCard() {
 
   return (
     <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-        <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Ritmo de Gastos</span>
-        <Link to="/transacoes" style={{ color: 'var(--accent-emerald)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: '500' }}>ver todas ↗</Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+        <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0 }}>Ritmo de Gastos</h3>
+        <Link to="/transacoes" style={{ color: 'var(--accent-emerald)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          ver todas <IconArrowUpRight size={14} />
+        </Link>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '4px' }}>
-        <strong style={{ fontSize: '1.6rem', color: 'var(--text-primary)', lineHeight: 1 }}>R$ 3.274,00</strong>
-        <span className="text-muted" style={{ fontSize: '0.8rem' }}>acima</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+        <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>R$ 4.250</strong>
+        <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-rose)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
+          <IconArrowUpRight size={12} /> 12%
+        </span>
       </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '14px' }}>
-        <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-rose)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600' }}>↗ +12%</span>
-        <span className="text-muted" style={{ fontSize: '0.75rem' }}>vs R$ 2.920 mês anterior</span>
-      </div>
+      <span className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '14px' }}>vs R$ 2.920 mês anterior</span>
 
       {/* Gráfico de Linha SVG */}
       <div style={{ flex: 1, position: 'relative', marginTop: '16px', minHeight: 0, overflow: 'hidden' }}>
@@ -109,18 +111,6 @@ function RitmoGastosCard() {
           ))}
         </div>
       </div>
-
-      {/* Legenda */}
-      <div style={{ display: 'flex', gap: '16px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--surface-border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ width: '16px', height: '2px', background: 'var(--accent-rose)', borderRadius: '1px' }}></div>
-          <span className="text-muted" style={{ fontSize: '0.75rem' }}>Este mês</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ width: '16px', height: '2px', background: 'rgba(255,255,255,0.2)', borderRadius: '1px', borderTop: '1px dashed rgba(255,255,255,0.3)' }}></div>
-          <span className="text-muted" style={{ fontSize: '0.75rem' }}>Mês passado</span>
-        </div>
-      </div>
     </article>
   );
 }
@@ -136,9 +126,11 @@ function ContasCorrentesCard() {
 
   return (
     <article className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <span className="text-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Contas Correntes</span>
-        <Link to="/carteiras" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none' }}>↗</Link>
+        <Link to="/carteiras" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <IconArrowUpRight size={14} />
+        </Link>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '24px' }}>
@@ -227,7 +219,9 @@ function CategoriasCard() {
     <article className="glass-card" style={{ padding: '28px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
         <span className="text-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Principais Categorias</span>
-        <Link to="/metas" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none' }}>ver mais ↗</Link>
+        <Link to="/metas" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          ver mais <IconArrowUpRight size={14} />
+        </Link>
       </div>
 
       {/* Cabeçalho da mini-tabela */}
@@ -261,9 +255,10 @@ function CategoriasCard() {
                     fontSize: '0.75rem', fontWeight: '500',
                     color: variacao > 0 ? 'var(--accent-rose)' : 'var(--accent-emerald)',
                     background: variacao > 0 ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)',
-                    padding: '2px 6px', borderRadius: '4px'
+                    padding: '2px 6px', borderRadius: '4px',
+                    display: 'flex', alignItems: 'center', gap: '2px', width: 'fit-content'
                   }}>
-                    {variacao > 0 ? '↗' : '↘'} {Math.abs(variacao)}%
+                    {variacao > 0 ? <IconTrendingUp size={12} /> : <IconTrendingDown size={12} />} {Math.abs(variacao)}%
                   </span>
                 ) : (
                   <span className="text-muted" style={{ fontSize: '0.75rem' }}>novo</span>
@@ -308,8 +303,10 @@ function TransacoesRecentesCard() {
   return (
     <article className="glass-card" style={{ padding: '28px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-        <span className="text-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Transações Recentes</span>
-        <Link to="/transacoes" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: '500' }}>ver todas ↗</Link>
+        <h3 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', margin: 0 }}>Transações Recentes</h3>
+        <Link to="/transacoes" style={{ color: 'var(--accent-emerald)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          ver todas <IconArrowUpRight size={14} />
+        </Link>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

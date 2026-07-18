@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IconBank, IconCard, IconSmartphone, IconMoreVertical, IconClose, IconMoney } from './Icons';
 
-function ListaContas({ contas = [] }) {
+function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [menuOpen, setMenuOpen] = useState(null);
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (listRef.current && !listRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Helper para renderizar o ícone com base na string
   const renderIcon = (iconeName) => {
@@ -23,7 +34,7 @@ function ListaContas({ contas = [] }) {
 
   return (
     <>
-      <article className="glass-card" style={{ padding: '24px' }}>
+      <article ref={listRef} className="glass-card" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.1rem', marginBottom: '20px', color: 'var(--text-primary)' }}>Minhas contas</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {contas.map(conta => (
@@ -57,8 +68,8 @@ function ListaContas({ contas = [] }) {
                   
                   {menuOpen === conta.id && (
                     <div className="glass-card" style={{ position: 'absolute', right: '0', top: '30px', zIndex: 10, minWidth: '150px', padding: '8px 0' }}>
-                      <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => e.stopPropagation()}>Ajustar Saldo</button>
-                      <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--accent-rose)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => e.stopPropagation()}>Excluir Conta</button>
+                      <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); onAjustarSaldo && onAjustarSaldo(conta.id); setMenuOpen(null); }}>Ajustar Saldo</button>
+                      <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--accent-rose)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); onDeleteConta && onDeleteConta(conta.id); setMenuOpen(null); }}>Excluir Conta</button>
                     </div>
                   )}
                 </div>

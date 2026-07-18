@@ -105,3 +105,17 @@ export const IconBarcode = ({ size = 20, color = "currentColor" }) => (
     <path d="M3 5v14M8 5v14M12 5v14M17 5v14M21 5v14"></path>
   </svg>
 );
+
+export const IconTrendingUp = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+    <polyline points="17 6 23 6 23 12"></polyline>
+  </svg>
+);
+
+export const IconTrendingDown = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+    <polyline points="17 18 23 18 23 12"></polyline>
+  </svg>
+);

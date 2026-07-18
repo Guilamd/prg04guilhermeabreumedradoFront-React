@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ListaContas from '../components/ListaContas';
 import { IconBank } from '../components/Icons';
+import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
+import Modal from '../components/Modal';
 
 function Carteiras() {
   const [showForm, setShowForm] = useState(false);
@@ -13,6 +15,32 @@ function Carteiras() {
   
   const [novaInstituicao, setNovaInstituicao] = useState('');
   const [novoSaldo, setNovoSaldo] = useState('');
+  const [novaCor, setNovaCor] = useState('#8B5CF6'); // Cor padrão roxa
+
+  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(7, 2026); // Inicializa com Agosto
+
+  const [adjustingSaldoId, setAdjustingSaldoId] = useState(null);
+  const [novoSaldoAjuste, setNovoSaldoAjuste] = useState('');
+
+  const handleDeleteConta = (id) => {
+    setContas(contas.filter(c => c.id !== id));
+  };
+
+  const handleAjustarSaldo = (id) => {
+    const conta = contas.find(c => c.id === id);
+    if (conta) {
+      setNovoSaldoAjuste(conta.saldo);
+      setAdjustingSaldoId(id);
+    }
+  };
+
+  const handleSalvarAjusteSaldo = (e) => {
+    e.preventDefault();
+    if (!novoSaldoAjuste) return;
+    setContas(contas.map(c => c.id === adjustingSaldoId ? { ...c, saldo: novoSaldoAjuste } : c));
+    setAdjustingSaldoId(null);
+    setNovoSaldoAjuste('');
+  };
 
   const handleSalvarConta = () => {
     if (!novaInstituicao || !novoSaldo) return;
@@ -21,14 +49,24 @@ function Carteiras() {
       nome: novaInstituicao,
       subtexto: 'Conta manual',
       saldo: novoSaldo,
-      color: '#8B5CF6',
+      color: novaCor,
       icone: 'bank'
     };
     setContas([...contas, nova]);
     setShowForm(false);
     setNovaInstituicao('');
     setNovoSaldo('');
+    setNovaCor('#8B5CF6');
   };
+
+  const saldoTotal = contas.reduce((acc, conta) => {
+    // Tratamento para converter strings como "1.486,45" ou "3.645,00" para float
+    const valorPuro = conta.saldo.toString().replace(/\./g, '').replace(',', '.');
+    const valorFloat = parseFloat(valorPuro);
+    return acc + (isNaN(valorFloat) ? 0 : valorFloat);
+  }, 0);
+  
+  const saldoFormatado = saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <section style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -43,6 +81,18 @@ function Carteiras() {
           <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
             + Adicionar Banco
           </button>
+        </div>
+
+        {/* Patrimônio Total */}
+        <div style={{ display: 'flex', gap: '24px' }}>
+          <article className="glass-card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span className="text-muted" style={{ fontSize: '0.9rem' }}>Patrimônio Total</span>
+            <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>R$ {saldoFormatado}</strong>
+          </article>
+          <article className="glass-card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span className="text-muted" style={{ fontSize: '0.9rem' }}>Bancos Conectados</span>
+            <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>{contas.length}</strong>
+          </article>
         </div>
 
         {/* Add Bank Form */}
@@ -66,6 +116,14 @@ function Carteiras() {
                   style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
                 />
               </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Cor</label>
+                <input 
+                  type="color" 
+                  value={novaCor} onChange={(e) => setNovaCor(e.target.value)}
+                  style={{ width: '48px', height: '48px', padding: '0', border: 'none', borderRadius: '8px', background: 'transparent', cursor: 'pointer' }} 
+                />
+              </div>
               <button className="btn-primary" onClick={handleSalvarConta}>Salvar Conta</button>
             </div>
           </div>
@@ -74,7 +132,7 @@ function Carteiras() {
         {/* Old Content (Contas + Open Finance) */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
           <div>
-            <ListaContas contas={contas} />
+            <ListaContas contas={contas} onDeleteConta={handleDeleteConta} onAjustarSaldo={handleAjustarSaldo} />
           </div>
           <div>
             <div className="glass-card" style={{ padding: '24px', textAlign: 'center', height: '100%' }}>
@@ -196,14 +254,15 @@ function Carteiras() {
                 </div>
                 <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Faturas anteriores</strong>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  <span style={{ fontSize: '0.85rem', fontWeight: '500' }}>Agosto de 2026</span>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </div>
+              
+              <MonthSelector 
+                mesAtual={mesAtual} 
+                mesIndex={mesIndex} 
+                anoAtual={anoAtual}
+                onMesAnterior={handleMesAnterior} 
+                onMesSeguinte={handleMesSeguinte} 
+                onMesSelect={handleMesSelect}
+              />
             </div>
 
             {/* Gráfico de Barras */}
@@ -245,6 +304,26 @@ function Carteiras() {
 
         </div>
       </div>
+
+      {/* Modal de Ajustar Saldo */}
+      <Modal isOpen={!!adjustingSaldoId} onClose={() => setAdjustingSaldoId(null)} title="Ajustar Saldo">
+        <form onSubmit={handleSalvarAjusteSaldo}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Novo Saldo (R$)</label>
+            <input 
+              type="text" 
+              value={novoSaldoAjuste} 
+              onChange={(e) => setNovoSaldoAjuste(e.target.value)}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
+              autoFocus
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
+            <button type="button" className="btn-glass" onClick={() => setAdjustingSaldoId(null)}>Cancelar</button>
+            <button type="submit" className="btn-primary">Atualizar Saldo</button>
+          </div>
+        </form>
+      </Modal>
     </section>
   );
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { IconMoney, IconMoreVertical } from '../components/Icons';
 import Modal from '../components/Modal';
+import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
 
 function Transacoes() {
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
+  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(6, 2026);
 
   // Lançamentos mockados no estado
   const [transacoes, setTransacoes] = useState([
@@ -71,14 +73,24 @@ function Transacoes() {
 
   return (
     <section className="dashboard-grid">
-      <div className="col-span-12" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div className="col-span-12" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 10 }}>
         <div>
           <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Transações</h2>
           <p className="text-muted">Acompanhe seu extrato detalhado e encontre lançamentos específicos.</p>
         </div>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-          + Novo Lançamento
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <MonthSelector 
+            mesAtual={mesAtual} 
+            mesIndex={mesIndex} 
+            anoAtual={anoAtual}
+            onMesAnterior={handleMesAnterior} 
+            onMesSeguinte={handleMesSeguinte} 
+            onMesSelect={handleMesSelect}
+          />
+          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+            + Novo Lançamento
+          </button>
+        </div>
       </div>
 
       {/* Barra de Filtros */}
@@ -212,8 +224,10 @@ function Transacoes() {
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Data</label>
               <input 
-                type="text" placeholder="Ex: 20 Jul" value={novaData} onChange={(e) => setNovaData(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
+                type="date" 
+                value={novaData} 
+                onChange={(e) => setNovaData(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)', colorScheme: 'dark' }} 
               />
             </div>
           </div>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IconTarget, IconMoreVertical } from '../components/Icons';
 import Modal from '../components/Modal';
+import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
 
 function Metas() {
   const [metas, setMetas] = useState([
@@ -18,10 +19,8 @@ function Metas() {
   const [novaCor, setNovaCor] = useState('#8B5CF6'); // Padrão purple
   const [expandedIds, setExpandedIds] = useState([1]); // Array para permitir múltiplos abertos
   
-  const mesesLista = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  const [mesIndex, setMesIndex] = useState(6); // 6 = Julho
-  const [anoAtual, setAnoAtual] = useState(2026);
-  const mesAtual = `${mesesLista[mesIndex]} de ${anoAtual}`;
+  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(6, 2026);
+  
   const [draggedItemIndex, setDraggedItemIndex] = useState(null);
 
   const handleDragEnter = (targetIndex) => {
@@ -39,26 +38,19 @@ function Metas() {
     setDraggedItemIndex(targetIndex); // Atualiza o índice sendo arrastado
   };
 
-  const handleMesAnterior = () => {
-    if (mesIndex === 0) {
-      setMesIndex(11);
-      setAnoAtual(prev => prev - 1);
-    } else {
-      setMesIndex(prev => prev - 1);
-    }
-  };
-
-  const handleMesSeguinte = () => {
-    if (mesIndex === 11) {
-      setMesIndex(0);
-      setAnoAtual(prev => prev + 1);
-    } else {
-      setMesIndex(prev => prev + 1);
-    }
-  };
-
   const [menuOpenMetaId, setMenuOpenMetaId] = useState(null);
   const [editingMetaId, setEditingMetaId] = useState(null);
+  const metasRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (metasRef.current && !metasRef.current.contains(event.target)) {
+        setMenuOpenMetaId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleExcluirMeta = (id) => {
     setMetas(metas.filter(m => m.id !== id));
@@ -111,7 +103,7 @@ function Metas() {
         </button>
       </div>
 
-      <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+      <div ref={metasRef} className="col-span-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
         {metas.map((meta, index) => {
           const percent = Math.min((meta.gasto / meta.limite) * 100, 100);
           
@@ -222,7 +214,7 @@ function Metas() {
         <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
           
           {/* Top Header - Resumo */}
-          <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px 40px' }}>
+          <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px 40px', position: 'relative', zIndex: 10 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <strong style={{ fontSize: '2.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>R$ {totalGasto.toFixed(2).replace('.', ',')}</strong>
               <span className="text-muted" style={{ fontSize: '0.85rem' }}>gasto em {mesAtual}</span>
@@ -262,21 +254,14 @@ function Metas() {
               </svg>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-              <button 
-                onClick={handleMesAnterior} 
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              </button>
-              <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-primary)', width: '130px', textAlign: 'center' }}>{mesAtual}</span>
-              <button 
-                onClick={handleMesSeguinte} 
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-            </div>
+            <MonthSelector 
+              mesAtual={mesAtual} 
+              mesIndex={mesIndex} 
+              anoAtual={anoAtual}
+              onMesAnterior={handleMesAnterior} 
+              onMesSeguinte={handleMesSeguinte} 
+              onMesSelect={handleMesSelect}
+            />
           </div>
 
           {/* Lista de Metas (Estilo Categorias) */}
