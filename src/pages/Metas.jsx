@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IconTarget, IconMoreVertical } from '../components/Icons';
 import Modal from '../components/Modal';
-import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
+import DatePicker from '../components/DatePicker';
 
 function Metas() {
   const [metas, setMetas] = useState([
@@ -19,7 +19,7 @@ function Metas() {
   const [novaCor, setNovaCor] = useState('#8B5CF6'); // Padrão purple
   const [expandedIds, setExpandedIds] = useState([1]); // Array para permitir múltiplos abertos
   
-  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(6, 2026);
+  const [selectedDate, setSelectedDate] = useState('2026-06-15');
   
   const [draggedItemIndex, setDraggedItemIndex] = useState(null);
 
@@ -254,13 +254,9 @@ function Metas() {
               </svg>
             </div>
 
-            <MonthSelector 
-              mesAtual={mesAtual} 
-              mesIndex={mesIndex} 
-              anoAtual={anoAtual}
-              onMesAnterior={handleMesAnterior} 
-              onMesSeguinte={handleMesSeguinte} 
-              onMesSelect={handleMesSelect}
+            <DatePicker 
+              value={selectedDate} 
+              onChange={(dateStr) => setSelectedDate(dateStr)} 
             />
           </div>
 

@@ -347,12 +347,22 @@ function TransacoesRecentesCard() {
 
 function Dashboard() {
   const { user } = useAuth();
+  const nomeUsuario = user ? user.name.split(' ')[0] : 'Usuário';
 
   return (
-    <section className="dashboard-grid" id="dashboardData">
-      {/* Linha 1: Insight + Ritmo de Gastos */}
-      <div className="col-span-6">
-        <InsightCard user={user} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Título da Página */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>Bem-vindo(a), {nomeUsuario}!</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0 }}>Aqui está o resumo de suas finanças.</p>
+        </div>
+      </div>
+
+      <section className="dashboard-grid" id="dashboardData">
+        {/* Linha 1: Insight + Ritmo de Gastos */}
+        <div className="col-span-6">
+          <InsightCard user={user} />
       </div>
       <div className="col-span-6">
         <RitmoGastosCard />
@@ -374,6 +384,7 @@ function Dashboard() {
         <CategoriasCard />
       </div>
     </section>
+    </div>
   );
 }
 

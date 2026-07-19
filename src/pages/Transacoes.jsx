@@ -3,11 +3,12 @@ import { IconMoney, IconMoreVertical } from '../components/Icons';
 import Modal from '../components/Modal';
 import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
 import CustomSelect from '../components/CustomSelect';
+import DatePicker from '../components/DatePicker';
 
 function Transacoes() {
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
-  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(6, 2026);
+  const [selectedDate, setSelectedDate] = useState('2026-06-15');
 
   // Lançamentos mockados no estado
   const [transacoes, setTransacoes] = useState([
@@ -201,13 +202,9 @@ function Transacoes() {
           <p className="text-muted">Acompanhe seu extrato detalhado e encontre lançamentos específicos.</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <MonthSelector 
-            mesAtual={mesAtual} 
-            mesIndex={mesIndex} 
-            anoAtual={anoAtual}
-            onMesAnterior={handleMesAnterior} 
-            onMesSeguinte={handleMesSeguinte} 
-            onMesSelect={handleMesSelect}
+          <DatePicker 
+            value={selectedDate} 
+            onChange={(dateStr) => setSelectedDate(dateStr)} 
           />
           <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
             + Novo Lançamento
@@ -364,11 +361,9 @@ function Transacoes() {
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Data</label>
-              <input 
-                type="date" 
+              <DatePicker 
                 value={novaData} 
-                onChange={(e) => setNovaData(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)', colorScheme: 'dark' }} 
+                onChange={(dateStr) => setNovaData(dateStr)} 
               />
             </div>
           </div>

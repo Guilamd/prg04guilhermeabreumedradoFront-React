@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ListaContas from '../components/ListaContas';
 import { IconBank } from '../components/Icons';
-import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
+import DatePicker from '../components/DatePicker';
 import Modal from '../components/Modal';
 
 function Carteiras() {
@@ -17,7 +17,7 @@ function Carteiras() {
   const [novoSaldo, setNovoSaldo] = useState('');
   const [novaCor, setNovaCor] = useState('#8B5CF6'); // Cor padrão roxa
 
-  const { mesAtual, mesIndex, anoAtual, handleMesAnterior, handleMesSeguinte, handleMesSelect } = useMonthSelector(7, 2026); // Inicializa com Agosto
+  const [selectedDate, setSelectedDate] = useState('2026-07-15');
 
   const [adjustingSaldoId, setAdjustingSaldoId] = useState(null);
   const [novoSaldoAjuste, setNovoSaldoAjuste] = useState('');
@@ -255,13 +255,9 @@ function Carteiras() {
                 <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Faturas anteriores</strong>
               </div>
               
-              <MonthSelector 
-                mesAtual={mesAtual} 
-                mesIndex={mesIndex} 
-                anoAtual={anoAtual}
-                onMesAnterior={handleMesAnterior} 
-                onMesSeguinte={handleMesSeguinte} 
-                onMesSelect={handleMesSelect}
+              <DatePicker 
+                value={selectedDate} 
+                onChange={(dateStr) => setSelectedDate(dateStr)} 
               />
             </div>
 
