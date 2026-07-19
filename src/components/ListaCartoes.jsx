@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconCard } from './Icons';
+import { IconCard, DynamicBankIcon } from './Icons';
 
 function ListaCartoes() {
   const cartoes = [
@@ -22,8 +22,8 @@ function ListaCartoes() {
           <div key={cartao.id} style={{ paddingBottom: '16px', borderBottom: '1px solid var(--surface-border)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: cartao.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {cartao.icon}
+                <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: cartao.color, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <DynamicBankIcon bankName={cartao.nome} size={40} type="card" />
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{cartao.nome}</strong>

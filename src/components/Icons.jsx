@@ -7,6 +7,40 @@ export const IconBank = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
+export const DynamicBankIcon = ({ bankName, size = 20, type = 'bank' }) => {
+  const getBankDomain = (name) => {
+    const n = name.toLowerCase();
+    if (n.includes('nubank')) return 'nubank.com.br';
+    if (n.includes('inter')) return 'bancointer.com.br';
+    if (n.includes('itaú') || n.includes('itau')) return 'itau.com.br';
+    if (n.includes('santander')) return 'santander.com.br';
+    if (n.includes('bradesco')) return 'banco.bradesco';
+    if (n.includes('xp')) return 'xpi.com.br';
+    if (n.includes('caixa')) return 'caixa.gov.br';
+    if (n.includes('bb') || n.includes('brasil')) return 'bb.com.br';
+    if (n.includes('c6')) return 'c6bank.com.br';
+    if (n.includes('btg')) return 'btgpactual.com';
+    return null;
+  };
+
+  const domain = getBankDomain(bankName);
+  
+  if (domain) {
+    return (
+      <div style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img 
+          src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`} 
+          alt="Bank Logo" 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          onError={(e) => { e.target.style.display = 'none'; }}
+        />
+      </div>
+    );
+  }
+
+  return type === 'card' ? <IconCard size={size} color="var(--text-secondary)" /> : <IconBank size={size} color="var(--text-secondary)" />;
+};
+
 export const IconCard = ({ size = 20, color = "currentColor" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>

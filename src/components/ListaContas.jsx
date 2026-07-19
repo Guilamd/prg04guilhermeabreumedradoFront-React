@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { IconBank, IconCard, IconSmartphone, IconMoreVertical, IconClose, IconMoney } from './Icons';
+import { IconMoreVertical, IconClose, IconMoney, DynamicBankIcon } from './Icons';
 
 function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -15,17 +15,6 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  // Helper para renderizar o ícone com base na string
-  const renderIcon = (iconeName) => {
-    switch(iconeName) {
-      case 'card': return <IconCard size={20} color="#fff" />;
-      case 'smartphone': return <IconSmartphone size={20} color="#fff" />;
-      case 'bank':
-      default:
-        return <IconBank size={20} color="#fff" />;
-    }
-  };
 
   const handleMenuClick = (e, id) => {
     e.stopPropagation(); // Prevents opening the modal when clicking the 3 dots
@@ -47,7 +36,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: conta.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
-                  {conta.icon ? conta.icon : renderIcon(conta.icone)}
+                  <DynamicBankIcon bankName={conta.nome} size={20} color="#fff" />
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{conta.nome}</strong>
@@ -86,9 +75,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
             {/* Header do Modal com cor do Banco */}
             <div style={{ background: selectedAccount.color, padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {selectedAccount.icon}
-                </div>
+                <DynamicBankIcon bankName={selectedAccount.nome} size={48} type="bank" />
                 <div style={{ color: '#fff' }}>
                   <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{selectedAccount.nome}</h2>
                   <span style={{ fontSize: '0.9rem', opacity: 0.9 }}>{selectedAccount.subtexto}</span>

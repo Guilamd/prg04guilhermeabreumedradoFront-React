@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft, IconTrendingDown, IconTrendingUp } from '../components/Icons';
+import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft, IconTrendingDown, IconTrendingUp, DynamicBankIcon } from '../components/Icons';
 
 /* ===================== COMPONENTES INTERNOS ===================== */
 
@@ -142,8 +142,8 @@ function ContasCorrentesCard() {
         {contas.map(c => (
           <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: c.cor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconCard size={16} color="#fff" />
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: c.cor, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <DynamicBankIcon bankName={c.banco} size={36} type="bank" />
               </div>
               <div>
                 <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{c.banco}</strong>
@@ -186,8 +186,8 @@ function LimiteCartaoCard() {
         {cartoes.map(c => (
           <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: c.cor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconCard size={16} color="#fff" />
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: c.cor, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <DynamicBankIcon bankName={c.banco} size={36} type="card" />
               </div>
               <div>
                 <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{c.banco}</strong>
