@@ -60,14 +60,10 @@ function LoginForm({ onToggleForm }) {
 
   return (
     <section className="card login-card">
-      <h2>Bem-vindo <span className="highlight-text">de volta!</span></h2>
+      <h2>Bem-vindo<span className="highlight-text">(a)!</span></h2>
       <p className="subtexto">Acesse sua conta para continuar</p>
       <div className="card-line"></div>
 
-      <div className="test-credentials">
-        <strong>Usuário:</strong> user@fintech.com | 1234 <br />
-        <strong style={{ marginTop: '5px', display: 'inline-block' }}>Admin:</strong> admin@fintech.com | 1234
-      </div>
 
       <form onSubmit={handleSubmit} noValidate className="auth-form">
         <div className="form-group">
@@ -111,7 +107,7 @@ function LoginForm({ onToggleForm }) {
         {error && <p className="login-erro-geral" style={{ display: 'block' }}>{error}</p>}
       </form>
 
-      <div style={{ textAlign: 'center', marginTop: '24px' }}>
+      <div style={{ textAlign: 'center', marginTop: '16px' }}>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Ainda não tem uma conta? {' '}
           <span 
@@ -123,7 +119,7 @@ function LoginForm({ onToggleForm }) {
         </p>
       </div>
 
-      <div className="card-security" style={{ marginTop: '24px' }}>
+      <div className="card-security" style={{ marginTop: '16px' }}>
         <ShieldIcon />
         <span>Seus dados estão protegidos com segurança</span>
       </div>
