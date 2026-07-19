@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 /* Ícones SVG para os inputs */
+const UserIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+);
+
 const MailIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -40,36 +47,65 @@ const ShieldIcon = () => (
   </svg>
 );
 
-function LoginForm({ onToggleForm }) {
+function RegisterForm({ onToggleForm }) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  
+  // Quando implementarmos o Backend, usaremos a função "register" do AuthContext
+  const { login } = useAuth(); // Por enquanto fazemos um auto-login com os dados
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const success = login(email, password);
-
-    if (!success) {
-      setError('E-mail ou senha incorretos. Tente novamente.');
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
     }
+
+    if (password.length < 4) {
+      setError('A senha deve ter no mínimo 4 caracteres.');
+      return;
+    }
+
+    // MOCK REGISTRATION: Como não temos backend, vamos fingir que o usuário se registrou
+    // e logar automaticamente no app com os dados dele
+    // Isso será substituído por const success = await register(name, email, password)
+    
+    alert('Cadastro realizado com sucesso! (Mock)');
+    
+    // Forçando o login fake no front-end para que o usuário entre no dashboard
+    // No ambiente real, essa função de login usará API local
+    login('user@fintech.com', '1234'); 
   };
 
   return (
     <section className="card login-card">
-      <h2>Bem-vindo <span className="highlight-text">de volta!</span></h2>
-      <p className="subtexto">Acesse sua conta para continuar</p>
+      <h2>Crie sua <span className="highlight-text">Conta</span></h2>
+      <p className="subtexto">Comece a transformar a sua vida financeira hoje</p>
       <div className="card-line"></div>
 
-      <div className="test-credentials">
-        <strong>Usuário:</strong> user@fintech.com | 1234 <br />
-        <strong style={{ marginTop: '5px', display: 'inline-block' }}>Admin:</strong> admin@fintech.com | 1234
-      </div>
-
       <form onSubmit={handleSubmit} noValidate className="auth-form">
+        <div className="form-group">
+          <label htmlFor="name">NOME COMPLETO</label>
+          <div className="input-wrapper">
+            <span className="input-icon"><UserIcon /></span>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              placeholder="Seu nome completo" 
+              required 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="form-group">
           <label htmlFor="email">E-MAIL</label>
           <div className="input-wrapper">
@@ -103,9 +139,26 @@ function LoginForm({ onToggleForm }) {
             <EyeIcon visible={showPassword} onClick={() => setShowPassword(!showPassword)} />
           </div>
         </div>
+        
+        <div className="form-group">
+          <label htmlFor="confirmSenha">CONFIRME A SENHA</label>
+          <div className="input-wrapper">
+            <span className="input-icon"><LockIcon /></span>
+            <input 
+              type={showPassword ? 'text' : 'password'}
+              id="confirmSenha" 
+              name="confirmSenha" 
+              placeholder="Repita a senha" 
+              required 
+              minLength="4"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <button type="submit" className="btn btn-primary w-100">
-          <span className="btn-arrow">→</span> Entrar
+        <button type="submit" className="btn btn-primary w-100" style={{ marginTop: '16px' }}>
+          <span className="btn-arrow">→</span> Criar Conta
         </button>
 
         {error && <p className="login-erro-geral" style={{ display: 'block' }}>{error}</p>}
@@ -113,12 +166,12 @@ function LoginForm({ onToggleForm }) {
 
       <div style={{ textAlign: 'center', marginTop: '24px' }}>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Ainda não tem uma conta? {' '}
+          Já possui uma conta? {' '}
           <span 
             onClick={onToggleForm} 
             style={{ color: 'var(--accent-purple)', fontWeight: 'bold', cursor: 'pointer', textDecoration: 'underline' }}
           >
-            Registre-se
+            Faça Login
           </span>
         </p>
       </div>
@@ -131,4 +184,4 @@ function LoginForm({ onToggleForm }) {
   );
 }
 
-export default LoginForm;
+export default RegisterForm;

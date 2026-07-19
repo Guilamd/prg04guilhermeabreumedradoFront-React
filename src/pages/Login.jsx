@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 import heroCard from '../assets/hero-card.png';
 
 /* Ícones SVG inline — estilo outline fino e elegante */
@@ -58,6 +59,8 @@ const IconLightbulb = () => (
 );
 
 function Login() {
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
     <div className="auth-body">
       {/* Blobs de fundo */}
@@ -94,17 +97,17 @@ function Login() {
 
             <div className="hero-features">
               <div className="feature-badge">
-                <span className="feature-icon"><IconShield /></span>
+                <span className="feature-icon"><IconGlobe /></span>
                 <div>
-                  <strong>Segurança total</strong>
-                  <p>Criptografia de ponta</p>
+                  <strong>Acesso rápido</strong>
+                  <p>De qualquer lugar</p>
                 </div>
               </div>
               <div className="feature-badge">
-                <span className="feature-icon"><IconBolt /></span>
+                <span className="feature-icon"><IconShield /></span>
                 <div>
-                  <strong>Tempo real</strong>
-                  <p>Dados sempre atualizados</p>
+                  <strong>Segurança total</strong>
+                  <p>Seus dados blindados</p>
                 </div>
               </div>
               <div className="feature-badge">
@@ -125,10 +128,14 @@ function Login() {
           </div>
         </div>
 
-        {/* Lado direito — Login */}
+        {/* Lado direito — Form */}
         <div className="auth-form-side">
           <main className="auth-container">
-            <LoginForm />
+            {isLogin ? (
+              <LoginForm onToggleForm={() => setIsLogin(false)} />
+            ) : (
+              <RegisterForm onToggleForm={() => setIsLogin(true)} />
+            )}
           </main>
         </div>
       </div>
