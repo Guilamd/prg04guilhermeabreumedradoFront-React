@@ -56,6 +56,7 @@
 
 /* Header Styles */
 .top-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -139,4 +140,76 @@
   .dashboard-content {
     padding: 24px;
   }
+}
+
+/* Custom Buttons for Settings */
+.btn-icon-back {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+.btn-icon-back:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateX(-2px);
+}
+
+.btn-danger-outline {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,0,0,0.05);
+  border: 1px solid rgba(255,0,0,0.2);
+  color: var(--accent-rose);
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+.btn-danger-outline:hover {
+  background: rgba(255,0,0,0.15);
+  border-color: rgba(255,0,0,0.4);
+  transform: translateY(-2px);
+}
+.btn-danger-outline:active {
+  transform: scale(0.98);
+}
+
+.btn-edit-avatar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  border: 3px solid var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.btn-edit-avatar:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+/* Standard Dropdown / Balão */
+.glass-dropdown {
+  background: rgba(15, 17, 26, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  z-index: 9999;
 }

@@ -65,27 +65,26 @@ function Header() {
           </button>
           
           <div 
-            className={`glass-card ${notifOpen ? 'open' : ''}`} 
+            className={`glass-dropdown ${notifOpen ? 'open' : ''}`} 
             style={{
               position: 'absolute',
               top: '50px',
               right: '0',
               padding: '16px',
               display: notifOpen ? 'block' : 'none',
-              minWidth: '280px',
-              zIndex: 20
+              minWidth: '280px'
             }}
           >
             <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Notificações</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ borderBottom: '1px solid var(--surface-border)', paddingBottom: '8px' }}>
+              <Link to="/transacoes" onClick={() => setNotifOpen(false)} style={{ display: 'block', textDecoration: 'none', borderBottom: '1px solid var(--surface-border)', paddingBottom: '8px', padding: '8px', borderRadius: '8px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Conta vencendo amanhã</strong>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>Sua fatura do cartão vence no dia 15.</p>
-              </div>
-              <div>
+              </Link>
+              <Link to="/transacoes" onClick={() => setNotifOpen(false)} style={{ display: 'block', textDecoration: 'none', padding: '8px', borderRadius: '8px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Transferência recebida</strong>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>Você recebeu um PIX de R$ 250,00.</p>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -95,26 +94,25 @@ function Header() {
           <div
             className="user-avatar"
             id="userAvatar"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', overflow: 'hidden' }}
             onClick={() => { setDropdownOpen(!dropdownOpen); setNotifOpen(false); }}
           >
-            {user ? user.name.substring(0, 2).toUpperCase() : '...'}
+            {user?.image ? (
+              <img src={user.image} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              user ? user.name.substring(0, 2).toUpperCase() : '...'
+            )}
           </div>
           <div 
-            className={`profile-dropdown ${dropdownOpen ? 'open' : ''}`} 
+            className={`profile-dropdown glass-dropdown ${dropdownOpen ? 'open' : ''}`} 
             id="profileDropdown"
             style={{
               position: 'absolute',
               top: '50px',
               right: '0',
-              background: 'var(--surface-color)',
-              border: '1px solid var(--surface-border)',
-              borderRadius: 'var(--radius-md)',
               padding: '8px 0',
-              backdropFilter: 'var(--glass-blur)',
               display: dropdownOpen ? 'block' : 'none',
-              minWidth: '150px',
-              zIndex: 20
+              minWidth: '150px'
             }}
           >
             {user ? (

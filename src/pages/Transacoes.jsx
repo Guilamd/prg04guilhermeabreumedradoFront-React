@@ -286,7 +286,7 @@ function Transacoes() {
                   <IconMoreVertical size={20} />
                 </button>
                 {menuOpenTransacaoId === t.id && (
-                  <div className="glass-card" style={{ position: 'absolute', right: '0', top: '30px', zIndex: 10, minWidth: '150px', padding: '8px 0' }}>
+                  <div className="glass-dropdown" style={{ position: 'absolute', right: '0', top: '30px', zIndex: 9999, minWidth: '150px', padding: '8px 0' }}>
                     <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); handleEditarTransacao(t); setMenuOpenTransacaoId(null); }}>Editar</button>
                     <button style={{ width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--accent-rose)', textAlign: 'left', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); handleExcluirTransacao(t.id); setMenuOpenTransacaoId(null); }}>Excluir</button>
                   </div>

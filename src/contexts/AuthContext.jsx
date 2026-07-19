@@ -8,24 +8,29 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Recupera o usuário do localStorage ao carregar a aplicação
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser({ name: storedUser });
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        // Fallback for old string format
+        setUser({ name: storedUser });
+      }
     }
   }, []);
 
   const login = (email, password) => {
     // Lógica de autenticação mockada
     if (email === "admin@fintech.com" && password === "1234") {
-      const userData = { name: 'Admin' };
-      localStorage.setItem('user', userData.name);
+      const userData = { name: 'Admin', email: 'admin@fintech.com' };
+      localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
       navigate('/'); // Redireciona para o dashboard
       return true;
     } else if (email === "user@fintech.com" && password === "1234") {
-      const userData = { name: 'Guilherme' };
-      localStorage.setItem('user', userData.name);
+      const userData = { name: 'Guilherme', email: 'guilherme@exemplo.com' };
+      localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
       navigate('/'); // Redireciona para o dashboard
       return true;
@@ -39,8 +44,16 @@ export function AuthProvider({ children }) {
     navigate('/login'); // Redireciona para a página de login
   };
 
+  const updateUser = (updates) => {
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

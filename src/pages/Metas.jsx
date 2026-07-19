@@ -155,9 +155,9 @@ function Metas() {
                     <IconMoreVertical size={20} />
                   </button>
                   {menuOpenMetaId === meta.id && (
-                    <div style={{ position: 'absolute', right: 0, top: '100%', background: 'rgba(20, 22, 35, 0.95)', border: '1px solid var(--surface-border)', borderRadius: '8px', padding: '8px', zIndex: 10, minWidth: '120px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)' }}>
+                    <div className="glass-dropdown" style={{ position: 'absolute', right: 0, top: '100%', padding: '8px 0', minWidth: '120px' }}>
                       <button 
-                        style={{ display: 'block', width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', cursor: 'pointer', borderRadius: '4px' }}
+                        style={{ display: 'block', width: '100%', padding: '8px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', cursor: 'pointer' }}
                         onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                         onClick={() => {
