@@ -56,7 +56,7 @@ function RegisterForm({ onToggleForm }) {
   const [error, setError] = useState('');
   
   // Quando implementarmos o Backend, usaremos a função "register" do AuthContext
-  const { login } = useAuth(); // Por enquanto fazemos um auto-login com os dados
+  const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,15 +72,14 @@ function RegisterForm({ onToggleForm }) {
       return;
     }
 
-    // MOCK REGISTRATION: Como não temos backend, vamos fingir que o usuário se registrou
-    // e logar automaticamente no app com os dados dele
-    // Isso será substituído por const success = await register(name, email, password)
+    // Chama a API real de cadastro
+    const success = await register(name, email, password);
     
-    alert('Cadastro realizado com sucesso! (Mock)');
-    
-    // Forçando o login fake no front-end para que o usuário entre no dashboard
-    // No ambiente real, essa função de login usará API local
-    login('user@fintech.com', '1234'); 
+    if (success) {
+      alert('Cadastro realizado com sucesso!');
+    } else {
+      setError('Erro ao criar conta. Talvez o email já esteja em uso.');
+    }
   };
 
   return (
@@ -130,9 +129,9 @@ function RegisterForm({ onToggleForm }) {
               type={showPassword ? 'text' : 'password'}
               id="senha" 
               name="senha" 
-              placeholder="Mínimo 4 caracteres" 
+              placeholder="Mínimo 6 caracteres" 
               required 
-              minLength="4"
+              minLength="6"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

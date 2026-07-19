@@ -1,25 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IconMoney, IconMoreVertical } from '../components/Icons';
 import Modal from '../components/Modal';
-import MonthSelector, { useMonthSelector } from '../components/MonthSelector';
 import CustomSelect from '../components/CustomSelect';
 import DatePicker from '../components/DatePicker';
+import api from '../services/api';
 
 function Transacoes() {
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [selectedDate, setSelectedDate] = useState('2026-06-15');
+  const anoAtual = new Date().getFullYear();
 
-  // Lançamentos mockados no estado
-  const [transacoes, setTransacoes] = useState([
-    { id: 1, data: '16 Jul', descricao: 'Salário mensal', categoria: 'Renda', conta: 'Conta Nubank', valor: '5.200,00', tipo: 'receita' },
-    { id: 2, data: '15 Jul', descricao: 'Mercado Carrefour', categoria: 'Alimentação', conta: 'Cartão Inter', valor: '345,90', tipo: 'despesa' },
-    { id: 3, data: '14 Jul', descricao: 'Netflix', categoria: 'Lazer', conta: 'Cartão Nubank', valor: '39,90', tipo: 'despesa' },
-    { id: 4, data: '12 Jul', descricao: 'Transferência Pix João', categoria: 'Transferência', conta: 'Conta Santander', valor: '150,00', tipo: 'receita' },
-    { id: 5, data: '10 Jul', descricao: 'Conta de Luz', categoria: 'Moradia', conta: 'Conta Caixa Econômica', valor: '185,40', tipo: 'despesa' },
-    { id: 6, data: '05 Jul', descricao: 'Uber', categoria: 'Transporte', conta: 'Cartão XP', valor: '24,50', tipo: 'despesa' },
-    { id: 7, data: '01 Jul', descricao: 'Rendimento CDI', categoria: 'Investimentos', conta: 'Conta Inter', valor: '12,45', tipo: 'receita' },
-  ]);
+  const [transacoes, setTransacoes] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [contas, setContas] = useState([]);
+
+  useEffect(() => {
+    // Buscar categorias e contas ao montar
+    api.get('/categorias').then(res => setCategorias(res.data));
+    api.get('/contas').then(res => setContas(res.data));
+  }, []);
+
+  useEffect(() => {
+    // Buscar transacoes (por enquanto buscando todas, idealmente passaria o mês)
+    api.get('/transacoes').then(res => {
+      const content = res.data.content || [];
+      const mapped = content.map(t => ({
+        id: t.id,
+        data: formatarData(t.dataHora ? t.dataHora.substring(0, 10) : ''),
+        descricao: t.titulo,
+        categoria: t.categoriaNome || 'Sem Categoria',
+        conta: t.contaDescricao || 'Conta Manual',
+        valor: t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+        tipo: t.tipoMovimentacao === 'RECEITA' ? 'receita' : 'despesa'
+      }));
+      setTransacoes(mapped);
+    });
+  }, [selectedDate]);
 
   // Estados do Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,30 +103,54 @@ function Transacoes() {
     setIsModalOpen(true);
   };
 
-  const handleSalvarTransacao = (e) => {
+  const handleSalvarTransacao = async (e) => {
     e.preventDefault();
     if (!novaDesc || !novoValor || !novaData || !novaCat) return;
 
-    if (editingTransacaoId) {
-      setTransacoes(transacoes.map(t => t.id === editingTransacaoId ? {
-        ...t,
-        data: formatarData(novaData),
-        descricao: novaDesc,
-        categoria: novaCat,
-        valor: novoValor,
-        tipo: novoTipo
-      } : t));
-    } else {
-      const novaTransacao = {
-        id: Date.now(),
-        data: formatarData(novaData),
-        descricao: novaDesc,
-        categoria: novaCat,
-        conta: 'Conta Manual',
-        valor: novoValor,
-        tipo: novoTipo
-      };
-      setTransacoes([novaTransacao, ...transacoes]);
+    // Converte valor "5.200,00" para 5200.00
+    let valorNumerico = parseFloat(novoValor.toString().replace(/\./g, '').replace(',', '.'));
+    if (isNaN(valorNumerico)) valorNumerico = 0;
+
+    // Achar IDs
+    const cat = categorias.find(c => c.nome === novaCat) || categorias[0];
+    const catId = cat ? cat.id : 1;
+    const contaId = contas.length > 0 ? contas[0].id : 1;
+
+    const dto = {
+      titulo: novaDesc,
+      valor: valorNumerico,
+      dataHora: `${novaData}T12:00:00`,
+      origem: 'MANUAL',
+      tipoMovimentacao: novoTipo === 'receita' ? 'RECEITA' : 'DESPESA',
+      tipoPagamento: 'PIX',
+      status: 'CONCLUIDA',
+      contaId: contaId,
+      categoriaId: catId
+    };
+
+    try {
+      if (editingTransacaoId) {
+        await api.put(`/transacoes/${editingTransacaoId}`, dto);
+      } else {
+        await api.post('/transacoes', dto);
+      }
+      
+      // Recarregar a lista
+      const res = await api.get('/transacoes');
+      const content = res.data.content || [];
+      const mapped = content.map(t => ({
+        id: t.id,
+        data: formatarData(t.dataHora ? t.dataHora.substring(0, 10) : ''),
+        descricao: t.titulo,
+        categoria: t.categoriaNome || 'Sem Categoria',
+        conta: t.contaDescricao || 'Conta Manual',
+        valor: t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+        tipo: t.tipoMovimentacao === 'RECEITA' ? 'receita' : 'despesa'
+      }));
+      setTransacoes(mapped);
+    } catch (err) {
+      console.error("Erro ao salvar transação:", err);
+      alert("Erro ao salvar transação.");
     }
 
     setIsModalOpen(false);

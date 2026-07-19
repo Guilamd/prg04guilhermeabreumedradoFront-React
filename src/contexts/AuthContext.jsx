@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -12,6 +13,9 @@ export function AuthProvider({ children }) {
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.nome && !parsedUser.name) {
+          parsedUser.name = parsedUser.nome;
+        }
         setUser(parsedUser);
       } catch (e) {
         // Fallback for old string format
@@ -20,28 +24,43 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = (email, password) => {
-    // Lógica de autenticação mockada
-    if (email === "admin@fintech.com" && password === "1234") {
-      const userData = { name: 'Admin', email: 'admin@fintech.com' };
+  const login = async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, senha: password });
+      const userData = response.data; // UsuarioResponseDTO
+      userData.name = userData.nome; // Normaliza para o front-end
+      
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
-      navigate('/'); // Redireciona para o dashboard
+      navigate('/');
       return true;
-    } else if (email === "user@fintech.com" && password === "1234") {
-      const userData = { name: 'Guilherme', email: 'guilherme@exemplo.com' };
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      navigate('/'); // Redireciona para o dashboard
-      return true;
+    } catch (error) {
+      console.error("Erro no login:", error);
+      return false;
     }
-    return false; // Falha no login
+  };
+
+  const register = async (name, email, password) => {
+    try {
+      const response = await api.post('/usuarios', { nome: name, email, senha: password });
+      const userData = response.data;
+      userData.name = userData.nome; // Normaliza para o front-end
+      
+      // Realiza o auto-login após registro
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      navigate('/');
+      return true;
+    } catch (error) {
+      console.error("Erro no cadastro:", error);
+      return false;
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('user');
     setUser(null);
-    navigate('/login'); // Redireciona para a página de login
+    navigate('/login');
   };
 
   const updateUser = (updates) => {
@@ -53,7 +72,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

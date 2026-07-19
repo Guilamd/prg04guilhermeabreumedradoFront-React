@@ -3,15 +3,27 @@ import ListaContas from '../components/ListaContas';
 import { IconBank } from '../components/Icons';
 import DatePicker from '../components/DatePicker';
 import Modal from '../components/Modal';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 function Carteiras() {
   const [showForm, setShowForm] = useState(false);
-  const [contas, setContas] = useState([
-    { id: 1, nome: 'Conta Santander', subtexto: 'Conta conectada', saldo: '1.486,45', color: '#EC0000', icone: 'bank' },
-    { id: 2, nome: 'Conta Caixa Econômica', subtexto: 'Conta manual', saldo: '5.468,99', color: '#185E9C', icone: 'bank' },
-    { id: 3, nome: 'Conta Inter', subtexto: 'Conta manual', saldo: '3.645,00', color: '#FF7A00', icone: 'card' },
-    { id: 4, nome: 'Conta Nubank', subtexto: 'Conta conectada', saldo: '4.345,17', color: '#8A05BE', icone: 'smartphone' },
-  ]);
+  const { user } = useAuth();
+  const [contas, setContas] = useState([]);
+
+  React.useEffect(() => {
+    api.get('/contas').then(res => {
+      const mapped = res.data.map(c => ({
+        id: c.id,
+        nome: c.descricao,
+        subtexto: c.ativa ? 'Ativa' : 'Inativa',
+        saldo: (c.saldoAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}),
+        color: '#8B5CF6',
+        icone: 'bank'
+      }));
+      setContas(mapped);
+    });
+  }, []);
   
   const [novaInstituicao, setNovaInstituicao] = useState('');
   const [novoSaldo, setNovoSaldo] = useState('');
@@ -42,21 +54,40 @@ function Carteiras() {
     setNovoSaldoAjuste('');
   };
 
-  const handleSalvarConta = () => {
+  const handleSalvarConta = async () => {
     if (!novaInstituicao || !novoSaldo) return;
-    const nova = {
-      id: Date.now(),
-      nome: novaInstituicao,
-      subtexto: 'Conta manual',
-      saldo: novoSaldo,
-      color: novaCor,
-      icone: 'bank'
+    
+    let valorFloat = parseFloat(novoSaldo.toString().replace(/\./g, '').replace(',', '.'));
+    if (isNaN(valorFloat)) valorFloat = 0;
+
+    const dto = {
+      descricao: novaInstituicao,
+      saldoAtual: valorFloat,
+      ativa: true,
+      usuarioId: user ? user.id : 1
     };
-    setContas([...contas, nova]);
-    setShowForm(false);
-    setNovaInstituicao('');
-    setNovoSaldo('');
-    setNovaCor('#8B5CF6');
+
+    try {
+      await api.post('/contas', dto);
+      const res = await api.get('/contas');
+      const mapped = res.data.map(c => ({
+        id: c.id,
+        nome: c.descricao,
+        subtexto: c.ativa ? 'Ativa' : 'Inativa',
+        saldo: (c.saldoAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}),
+        color: novaCor || '#8B5CF6',
+        icone: 'bank'
+      }));
+      setContas(mapped);
+      
+      setShowForm(false);
+      setNovaInstituicao('');
+      setNovoSaldo('');
+      setNovaCor('#8B5CF6');
+    } catch(err) {
+      console.error(err);
+      alert('Erro ao salvar conta');
+    }
   };
 
   const saldoTotal = contas.reduce((acc, conta) => {

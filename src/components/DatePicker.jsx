@@ -144,14 +144,13 @@ export default function DatePicker({ value, onChange }) {
           position: 'absolute',
           top: 'calc(100% + 8px)',
           left: 0,
-          background: 'var(--bg-panel)',
+          background: '#0F1115',
           border: '1px solid var(--surface-border)',
           borderRadius: '12px',
           padding: '16px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
           zIndex: 100,
-          width: '280px',
-          backdropFilter: 'blur(20px)'
+          width: '280px'
         }}>
           {/* Header do Calendário (Navegação de Meses) */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>

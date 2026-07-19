@@ -7,6 +7,7 @@ import SubscriptionSettings from './settings/SubscriptionSettings';
 import SecuritySettings from './settings/SecuritySettings';
 import NotificationSettings from './settings/NotificationSettings';
 import { IconSettings, IconMoney, IconCard, IconTarget, IconClose } from '../components/Icons';
+import api from '../services/api';
 
 /* Ícone de seta para a direita (chevron) */
 const IconChevronRight = ({ size = 18, color = 'currentColor' }) => (
@@ -201,9 +202,19 @@ function Configuracoes() {
               <button 
                 className={deleteCountdown === 0 ? 'btn-danger-outline' : ''}
                 disabled={deleteCountdown > 0}
-                onClick={() => {
-                  alert('Conta excluída com sucesso! (Simulação)');
-                  logout();
+                onClick={async () => {
+                  if (user && user.id) {
+                    try {
+                      await api.delete(`/usuarios/${user.id}`);
+                      alert('Conta excluída com sucesso!');
+                      logout();
+                    } catch(err) {
+                      console.error(err);
+                      alert('Erro ao excluir conta.');
+                    }
+                  } else {
+                    logout();
+                  }
                 }}
                 style={{
                   width: '100%', padding: '14px', borderRadius: '12px', fontSize: '1rem', fontWeight: 'bold', border: 'none', cursor: deleteCountdown > 0 ? 'not-allowed' : 'pointer',

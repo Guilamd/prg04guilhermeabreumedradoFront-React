@@ -51,7 +51,7 @@ function LoginForm({ onToggleForm }) {
     e.preventDefault();
     setError('');
 
-    const success = login(email, password);
+    const success = await login(email, password);
 
     if (!success) {
       setError('E-mail ou senha incorretos. Tente novamente.');
