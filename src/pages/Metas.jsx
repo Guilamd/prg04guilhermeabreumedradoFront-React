@@ -102,7 +102,7 @@ function Metas() {
     e.preventDefault();
     if (!novaCat || !novoLimite) return;
 
-    const catEncontrada = categorias.find(c => c.nome.toLowerCase() === novaCat.toLowerCase());
+    const catEncontrada = categorias.find(c => c.nome === novaCat);
     const catId = catEncontrada ? catEncontrada.id : (categorias[0] ? categorias[0].id : 1);
 
     const dto = {
@@ -406,10 +406,17 @@ function Metas() {
         <form onSubmit={handleSalvarMeta} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Categoria</label>
-            <input 
-              type="text" placeholder="Ex: Viagem, Alimentação..." value={novaCat} onChange={(e) => setNovaCat(e.target.value)}
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} required
-            />
+            <select 
+              value={novaCat} 
+              onChange={(e) => setNovaCat(e.target.value)}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)', appearance: 'none' }} 
+              required
+            >
+              <option value="" disabled hidden>Selecione uma categoria...</option>
+              {categorias.map(c => (
+                <option key={c.id} value={c.nome} style={{ background: 'var(--surface-primary)' }}>{c.nome}</option>
+              ))}
+            </select>
           </div>
 
           <div style={{ display: 'flex', gap: '16px' }}>

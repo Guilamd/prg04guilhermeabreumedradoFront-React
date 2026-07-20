@@ -257,21 +257,19 @@ function Dashboard() {
 
   useEffect(() => {
     // Buscar contas
-    api.get('/contas').then(res => {
-      setContas(res.data);
-      if (res.data.length > 0) {
-        // Buscar resumo da primeira conta
-        const contaId = res.data[0].id;
-        const d = new Date();
-        const mesAno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        api.get(`/transacoes/resumo?contaId=${contaId}&mesAno=${mesAno}`)
-           .then(r => setResumo(r.data));
-      }
-    });
+    api.get('/contas').then(res => setContas(res.data));
 
     // Buscar transacoes recentes
     api.get('/transacoes?size=1000').then(res => setTransacoes(res.data.content || []));
   }, []);
+
+  const d = new Date();
+  const currentMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  
+  // Calcular despesas totais baseado nas transações (para unificar todas as contas e bater com o gráfico)
+  const totalDespesasFront = transacoes
+    .filter(t => t.tipoMovimentacao === 'DESPESA' && t.dataHora && t.dataHora.startsWith(currentMonth))
+    .reduce((acc, t) => acc + t.valor, 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -284,10 +282,10 @@ function Dashboard() {
 
       <section className="dashboard-grid" id="dashboardData">
         <div className="col-span-6">
-          <InsightCard user={user} despesasTotais={resumo.totalDespesas || 0} />
+          <InsightCard user={user} despesasTotais={totalDespesasFront} />
         </div>
         <div className="col-span-6">
-          <RitmoGastosCard despesasTotais={resumo.totalDespesas || 0} transacoes={transacoes} />
+          <RitmoGastosCard despesasTotais={totalDespesasFront} transacoes={transacoes} />
         </div>
 
         <div className="col-span-12">

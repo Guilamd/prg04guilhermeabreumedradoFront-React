@@ -26,7 +26,7 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <h2>Fin<span className="text-emerald">Tech</span> {user && user.name === 'Admin' && <span style={{ fontSize: '0.8rem', background: 'var(--accent-rose)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Admin</span>}</h2>
+        <h2>Fin<span className="text-emerald">Tech</span> {user && (user.name === 'Admin' || user.name === 'Administrador') && <span style={{ fontSize: '0.8rem', background: 'var(--accent-rose)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Admin</span>}</h2>
       </div>
       <nav className="sidebar-nav">
         <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
@@ -41,7 +41,7 @@ function Sidebar() {
         <Link to="/metas" className={`nav-link ${location.pathname === '/metas' ? 'active' : ''}`}>
           <span className="icon"><IconTarget size={18} /></span> Metas
         </Link>
-        {user && user.name === 'Admin' && (
+        {user && (user.name === 'Admin' || user.name === 'Administrador') && (
           <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
             <span className="icon"><IconUsers size={18} /></span> Admin: Usuários
           </Link>

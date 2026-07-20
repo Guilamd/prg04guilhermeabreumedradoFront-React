@@ -30,7 +30,8 @@ function ProfileSettings({ onBack }) {
       if (user && user.id) {
         await api.put(`/usuarios/${user.id}/perfil`, {
           nome,
-          email
+          email,
+          image: user.image
         });
       }
       updateUser({ name: nome, email: email });
