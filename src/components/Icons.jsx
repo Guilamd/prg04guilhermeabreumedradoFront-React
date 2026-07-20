@@ -27,6 +27,7 @@ export const DynamicBankIcon = ({ bankName, size = 20, type = 'bank' }) => {
     if (n.includes('bb') || n.includes('brasil')) return 'bb.com.br';
     if (n.includes('c6')) return 'c6bank.com.br';
     if (n.includes('btg')) return 'btgpactual.com';
+    if (n.includes('mercado pago') || n.includes('mercadopago')) return 'mercadopago.com.br';
     return null;
   };
 

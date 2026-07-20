@@ -181,6 +181,15 @@ function Configuracoes() {
           <MenuItem icon={<IconTrash size={18} color="var(--accent-rose)" />} label="Excluir minha conta" onClick={() => { setIsDeleteModalOpen(true); setDeleteCountdown(5); }} danger />
         </div>
 
+        {/* Informações do Sistema */}
+        <div style={{ marginTop: '24px', textAlign: 'center', opacity: 0.6 }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <p style={{ margin: '0 0 4px 0' }}>© 2026 <strong>FinTech</strong> — Guilherme Abreu Medrado</p>
+            <p style={{ margin: '0' }}>PRG04 — Programação Web</p>
+            <p style={{ margin: '8px 0 0 0', fontSize: '0.65rem' }}>Versão 1.0.0</p>
+          </div>
+        </div>
+
       </div>
 
       {/* Modal de Exclusão de Conta */}

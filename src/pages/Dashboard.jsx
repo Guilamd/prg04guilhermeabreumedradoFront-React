@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft, IconTrendingDown, IconTrendingUp, DynamicBankIcon } from '../components/Icons';
 import api from '../services/api';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 /* ===================== COMPONENTES INTERNOS ===================== */
 
@@ -45,15 +46,41 @@ function InsightCard({ user, despesasTotais }) {
   );
 }
 
-function RitmoGastosCard({ despesasTotais }) {
-  const pontos = [0, 5, 8, 12, 12, 18, 22, 35, 42, 42, 50, 55, 60, 65, 72, 80];
-  const width = 100;
-  const stepX = width / (pontos.length - 1);
-  const pathD = pontos.map((p, i) => {
-    const x = (i * stepX);
-    const y = 100 - p; 
-    return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-  }).join(' ');
+function RitmoGastosCard({ despesasTotais, transacoes }) {
+  const dataMap = {};
+  const today = new Date();
+  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  for (let i = 1; i <= lastDay; i++) {
+    dataMap[i] = 0;
+  }
+
+  if (transacoes && transacoes.length > 0) {
+    transacoes.forEach(t => {
+      if (t.tipoMovimentacao === 'DESPESA' && t.dataHora && t.dataHora.startsWith(currentMonth)) {
+        const day = parseInt(t.dataHora.substring(8, 10), 10);
+        if (dataMap[day] !== undefined) {
+          dataMap[day] += t.valor;
+        }
+      }
+    });
+  }
+
+  let cumulative = 0;
+  const chartData = [];
+  const currentDay = today.getDate();
+  
+  for (let i = 1; i <= lastDay; i++) {
+    cumulative += dataMap[i];
+    if (i <= currentDay || cumulative > 0) {
+      chartData.push({ dia: i, gasto: cumulative });
+    }
+  }
+
+  if (chartData.length === 0) {
+    chartData.push({ dia: 1, gasto: 0 });
+  }
 
   return (
     <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px' }}>
@@ -69,27 +96,26 @@ function RitmoGastosCard({ despesasTotais }) {
       </div>
       <span className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '14px' }}>Mês atual</span>
 
-      <div style={{ flex: 1, position: 'relative', marginTop: '16px', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingRight: '8px' }}>
-          {['Max', '', 'Med', '', '0'].map((l, i) => (
-            <span key={i} className="text-muted" style={{ fontSize: '0.65rem' }}>{l}</span>
-          ))}
-        </div>
-        <div style={{ marginLeft: '40px', height: '100%' }}>
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-            {[0, 25, 50, 75, 100].map(y => (
-              <line key={y} x1="0" y1={y} x2="100" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />
-            ))}
-            <path d="M 0 95 L 7 90 L 14 85 L 21 78 L 28 75 L 35 70 L 42 65 L 49 58 L 56 52 L 63 48 L 70 42 L 77 38 L 84 32 L 91 28 L 100 22" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="2,2" vectorEffect="non-scaling-stroke" />
-            <path d={pathD} fill="none" stroke="var(--accent-rose)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <circle cx={stepX * (pontos.length - 1)} cy={100 - pontos[pontos.length - 1]} r="2.5" fill="var(--accent-rose)" vectorEffect="non-scaling-stroke" />
-          </svg>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginLeft: '40px', marginTop: '8px' }}>
-          {['1', '8', '15', '22', '31'].map((d, i) => (
-            <span key={i} className="text-muted" style={{ fontSize: '0.65rem' }}>{d}</span>
-          ))}
-        </div>
+      <div style={{ flex: 1, position: 'relative', marginTop: '16px', minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorGasto" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--accent-rose)" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="var(--accent-rose)" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="dia" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} minTickGap={20} />
+            <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
+            <Tooltip 
+              contentStyle={{ background: 'rgba(11, 13, 23, 0.95)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+              itemStyle={{ color: 'var(--accent-rose)' }}
+              formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Acumulado']}
+              labelFormatter={(label) => `Dia ${label}`}
+            />
+            <Area type="monotone" dataKey="gasto" stroke="var(--accent-rose)" strokeWidth={3} fillOpacity={1} fill="url(#colorGasto)" />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </article>
   );
@@ -171,8 +197,22 @@ function TransacoesRecentesCard({ transacoes }) {
   );
 }
 
-function CategoriasCard({ gastosMap }) {
-  const entradas = Object.entries(gastosMap || {});
+function CategoriasCard({ transacoes }) {
+  const gastosMap = {};
+  const today = new Date();
+  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  
+  if (transacoes && transacoes.length > 0) {
+    transacoes.forEach(t => {
+      if (t.tipoMovimentacao === 'DESPESA' && t.dataHora && t.dataHora.startsWith(currentMonth)) {
+        const catName = t.categoriaNome || 'Sem Categoria';
+        if (!gastosMap[catName]) gastosMap[catName] = 0;
+        gastosMap[catName] += t.valor;
+      }
+    });
+  }
+
+  const entradas = Object.entries(gastosMap).sort((a, b) => b[1] - a[1]);
   const maxVal = Math.max(...entradas.map(e => e[1]), 1);
 
   return (
@@ -183,16 +223,16 @@ function CategoriasCard({ gastosMap }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {entradas.length === 0 && <span className="text-muted">Sem gastos registrados.</span>}
-        {entradas.map(([nome, valor], i) => {
+        {entradas.slice(0, 5).map(([nome, valor], i) => {
           const barWidth = (valor / maxVal) * 100;
           return (
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: '8px', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-purple)' }}></div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>{nome}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>R$ {valor.toLocaleString('pt-BR')}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>R$ {valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
                   <div style={{ width: `${barWidth}%`, height: '100%', background: 'var(--accent-purple)', borderRadius: '2px' }}></div>
                 </div>
@@ -230,7 +270,7 @@ function Dashboard() {
     });
 
     // Buscar transacoes recentes
-    api.get('/transacoes').then(res => setTransacoes(res.data.content || []));
+    api.get('/transacoes?size=1000').then(res => setTransacoes(res.data.content || []));
   }, []);
 
   return (
@@ -247,7 +287,7 @@ function Dashboard() {
           <InsightCard user={user} despesasTotais={resumo.totalDespesas || 0} />
         </div>
         <div className="col-span-6">
-          <RitmoGastosCard despesasTotais={resumo.totalDespesas || 0} />
+          <RitmoGastosCard despesasTotais={resumo.totalDespesas || 0} transacoes={transacoes} />
         </div>
 
         <div className="col-span-12">
@@ -258,7 +298,7 @@ function Dashboard() {
           <TransacoesRecentesCard transacoes={transacoes} />
         </div>
         <div className="col-span-4">
-          <CategoriasCard gastosMap={resumo.gastosPorCategoria} />
+          <CategoriasCard transacoes={transacoes} />
         </div>
       </section>
     </div>

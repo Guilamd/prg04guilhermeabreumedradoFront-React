@@ -44,6 +44,7 @@ function Transacoes() {
   const [novoValor, setNovoValor] = useState('');
   const [novaData, setNovaData] = useState('');
   const [novaCat, setNovaCat] = useState('Alimentação');
+  const [novaCatCustom, setNovaCatCustom] = useState('');
   const [novoTipo, setNovoTipo] = useState('despesa');
 
   const [menuOpenTransacaoId, setMenuOpenTransacaoId] = useState(null);
@@ -107,13 +108,36 @@ function Transacoes() {
     e.preventDefault();
     if (!novaDesc || !novoValor || !novaData || !novaCat) return;
 
-    // Converte valor "5.200,00" para 5200.00
     let valorNumerico = parseFloat(novoValor.toString().replace(/\./g, '').replace(',', '.'));
     if (isNaN(valorNumerico)) valorNumerico = 0;
 
-    // Achar IDs
-    const cat = categorias.find(c => c.nome === novaCat) || categorias[0];
-    const catId = cat ? cat.id : 1;
+    let finalCatNome = novaCat;
+    if (novaCat === 'new') {
+      if (!novaCatCustom.trim()) { alert("Digite o nome da nova categoria"); return; }
+      finalCatNome = novaCatCustom.trim();
+    }
+
+    let cat = categorias.find(c => c.nome.toLowerCase() === finalCatNome.toLowerCase());
+    let catId = cat ? cat.id : null;
+
+    if (!catId) {
+      try {
+        const novaCategoriaReq = {
+          nome: finalCatNome,
+          corHexadecimal: '#8B5CF6',
+          ativa: true
+        };
+        const catRes = await api.post('/categorias', novaCategoriaReq);
+        catId = catRes.data.id;
+        
+        setCategorias(prev => [...prev, catRes.data]);
+      } catch (err) {
+        console.error("Erro ao criar categoria", err);
+        alert("Erro ao criar categoria");
+        return;
+      }
+    }
+
     const contaId = contas.length > 0 ? contas[0].id : 1;
 
     const dto = {
@@ -161,6 +185,7 @@ function Transacoes() {
     setNovoValor('');
     setNovaData('');
     setNovaCat('Alimentação');
+    setNovaCatCustom('');
   };
 
   const fecharModal = () => {
@@ -170,6 +195,7 @@ function Transacoes() {
     setNovoValor('');
     setNovaData('');
     setNovaCat('Alimentação');
+    setNovaCatCustom('');
   };
 
   const handleDescricaoChange = (val) => {
@@ -387,18 +413,17 @@ function Transacoes() {
                 value={novaCat}
                 onChange={(val) => setNovaCat(val)}
                 options={[
-                  { value: 'Alimentação', label: 'Alimentação' },
-                  { value: 'Moradia', label: 'Moradia' },
-                  { value: 'Transporte', label: 'Transporte' },
-                  { value: 'Saúde', label: 'Saúde' },
-                  { value: 'Lazer', label: 'Lazer' },
-                  { value: 'Educação', label: 'Educação' },
-                  { value: 'Investimentos', label: 'Investimentos' },
-                  { value: 'Transferência', label: 'Transferência' },
-                  { value: 'Renda', label: 'Renda (Salário/Outros)' },
-                  { value: 'Outros', label: 'Outros' }
+                  ...categorias.map(c => ({ value: c.nome, label: c.nome })),
+                  { value: 'new', label: '➕ Criar Nova Categoria...' }
                 ]}
               />
+              {novaCat === 'new' && (
+                <input 
+                  type="text" placeholder="Nome da nova categoria" 
+                  value={novaCatCustom} onChange={(e) => setNovaCatCustom(e.target.value)}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--accent-purple)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)', marginTop: '8px' }} required
+                />
+              )}
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Data</label>

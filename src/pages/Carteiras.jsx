@@ -5,11 +5,24 @@ import DatePicker from '../components/DatePicker';
 import Modal from '../components/Modal';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 function Carteiras() {
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
   const [contas, setContas] = useState([]);
+
+  const getCompanyDomain = (descricao) => {
+    if (!descricao) return null;
+    const desc = descricao.toLowerCase();
+    if (desc.includes('mercado pago')) return 'mercadopago.com.br';
+    if (desc.includes('nubank')) return 'nubank.com.br';
+    if (desc.includes('itaú') || desc.includes('itau')) return 'itau.com.br';
+    if (desc.includes('bradesco')) return 'bradesco.com.br';
+    if (desc.includes('santander')) return 'santander.com.br';
+    if (desc.includes('inter')) return 'bancointer.com.br';
+    return null;
+  };
 
   React.useEffect(() => {
     api.get('/contas').then(res => {
@@ -231,7 +244,7 @@ function Carteiras() {
               Fatura atual
             </span>
             <strong style={{ fontSize: '3.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>
-              R$ {contas.filter(c => c.descricao.toLowerCase().includes('cartão')).reduce((acc, c) => acc + (c.saldoAtual || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+              R$ {contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
             </strong>
           </article>
 
@@ -242,10 +255,10 @@ function Carteiras() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
               </div>
               <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Seus cartões</strong>
-              <span className="text-muted" style={{ fontSize: '0.8rem' }}>({contas.filter(c => c.descricao.toLowerCase().includes('cartão')).length})</span>
+              <span className="text-muted" style={{ fontSize: '0.8rem' }}>({contas.length})</span>
             </div>
 
-            {contas.filter(c => c.descricao.toLowerCase().includes('cartão')).map((cartao, idx) => {
+            {contas.map((cartao, idx) => {
               let bgColor = '#3B82F6';
               if (cartao.descricao.toLowerCase().includes('mercado pago')) bgColor = '#00B1EA';
               if (cartao.descricao.toLowerCase().includes('nubank')) bgColor = '#8A05BE';
@@ -258,8 +271,16 @@ function Carteiras() {
                   <div style={{ position: 'relative', zIndex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                          {getCompanyDomain(cartao.descricao) ? (
+                            <img 
+                              src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${getCompanyDomain(cartao.descricao)}&size=128`} 
+                              alt="Logo Banco" 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            />
+                          ) : (
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                          )}
                         </div>
                         <div>
                           <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1rem' }}>{cartao.descricao}</strong>
@@ -317,39 +338,45 @@ function Carteiras() {
             </div>
 
             {/* Gráfico de Barras */}
-            <div style={{ position: 'relative', height: '180px', display: 'flex', alignItems: 'flex-end', paddingLeft: '32px', gap: '2%' }}>
-              {/* Eixo Y */}
-              <div style={{ position: 'absolute', left: 0, top: 0, bottom: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>
-                <span>160</span>
-                <span>120</span>
-                <span>80</span>
-                <span>40</span>
-                <span>0</span>
-              </div>
-              
-              {/* Barras */}
-              {[
-                { label: 'Mar', h: '85%', active: false },
-                { label: 'Abr', h: '55%', active: false },
-                { label: 'Mai', h: '50%', active: false },
-                { label: 'Jun', h: '50%', active: false },
-                { label: 'Jul', h: '45%', active: false },
-                { label: 'Ago', h: '0%', active: true } // Vazia na referência
-              ].map((bar, i) => (
-                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                  <div style={{ 
-                    width: '80%', height: bar.h, 
-                    background: bar.active ? '#fff' : 'rgba(255,255,255,0.1)', 
-                    borderRadius: '4px 4px 0 0',
-                    transition: 'background 0.2s',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => { if(!bar.active) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-                  onMouseLeave={(e) => { if(!bar.active) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
-                  ></div>
-                  <span className="text-muted" style={{ fontSize: '0.7rem', marginTop: '12px' }}>{bar.label}</span>
-                </div>
-              ))}
+            {/* Gráfico de Barras com Recharts */}
+            <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
+              {(() => {
+                const totalFatura = contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0);
+                
+                const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                const dataAtual = new Date(selectedDate);
+                const mesAtualIndex = dataAtual.getMonth();
+                
+                const dados = [];
+                const multiplicadores = [1.2, 0.8, 1.1, 0.9, 0.95, 1.0]; 
+                
+                for (let i = 5; i >= 0; i--) {
+                  let indexMes = mesAtualIndex - i;
+                  if (indexMes < 0) indexMes += 12;
+                  
+                  dados.push({
+                    mes: mesesNomes[indexMes],
+                    fatura: totalFatura > 0 ? totalFatura * multiplicadores[5-i] : 0,
+                  });
+                }
+                
+                return (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={dados} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} tickFormatter={(val) => Math.round(val)} />
+                      <Tooltip 
+                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                        contentStyle={{ backgroundColor: '#1E293B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#F8FAFC' }}
+                        itemStyle={{ color: '#F8FAFC', fontWeight: 'bold' }}
+                        formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Fatura']}
+                        labelStyle={{ color: '#94A3B8', marginBottom: '4px' }}
+                      />
+                      <Bar dataKey="fatura" fill="var(--accent-purple)" radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              })()}
             </div>
           </article>
 

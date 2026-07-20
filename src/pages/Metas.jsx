@@ -7,6 +7,7 @@ import api from '../services/api';
 function Metas() {
   const [metas, setMetas] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [transacoes, setTransacoes] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [novaCat, setNovaCat] = useState('');
@@ -55,6 +56,7 @@ function Metas() {
       api.get('/transacoes?size=1000')
     ]).then(([metasRes, transacoesRes]) => {
        const todasTrans = transacoesRes.data.content || [];
+       setTransacoes(todasTrans);
        const prefixoMes = selectedDate.substring(0, 7);
        
        const gastosPorCat = {};
@@ -267,7 +269,8 @@ function Metas() {
                     const percent = totalGasto > 0 ? (meta.gasto / totalGasto) * 100 : 0;
                     if (percent === 0) return null;
                     
-                    const segmentSize = Math.max(0, percent - 1.5);
+                    const gap = percent > 2 ? 1.5 : 0;
+                    const segmentSize = Math.max(0.5, percent - gap);
                     const strokeDasharray = `${segmentSize} ${100 - segmentSize}`;
                     const strokeDashoffset = 100 - acc;
                     
@@ -335,6 +338,52 @@ function Metas() {
                         </div>
                       </div>
                     </div>
+                    {isExpanded && (
+                      <div style={{ 
+                        padding: '16px 24px', 
+                        background: 'rgba(0,0,0,0.2)', 
+                        borderTop: '1px solid rgba(255,255,255,0.02)'
+                      }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {transacoes
+                            .filter(t => t.categoriaId === meta.categoriaId && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA')
+                            .map(t => (
+                              <div 
+                                key={t.id} 
+                                style={{ 
+                                  display: 'flex', 
+                                  justifyContent: 'space-between', 
+                                  alignItems: 'center', 
+                                  padding: '12px 16px', 
+                                  background: 'rgba(255,255,255,0.03)',
+                                  borderRadius: '12px',
+                                  borderLeft: `3px solid ${meta.color}`,
+                                  transition: 'background 0.2s',
+                                  cursor: 'default'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: meta.color, opacity: 0.5 }}></div>
+                                  <div>
+                                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: '500' }}>{t.titulo}</strong>
+                                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>{t.dataHora.substring(8,10)}/{t.dataHora.substring(5,7)}</span>
+                                  </div>
+                                </div>
+                                <span style={{ color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: '600' }}>
+                                  R$ {t.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                </span>
+                              </div>
+                            ))}
+                          {transacoes.filter(t => t.categoriaId === meta.categoriaId && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA').length === 0 && (
+                            <div className="text-muted" style={{ fontSize: '0.85rem', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+                              Nenhuma despesa registrada nesta categoria no mês selecionado.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

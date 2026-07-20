@@ -57,7 +57,9 @@ export default function CustomSelect({ value, onChange, options, style }) {
           boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '4px'
+          gap: '4px',
+          maxHeight: '220px',
+          overflowY: 'auto'
         }}>
           {options.map(opt => {
             const isSelected = opt.value === value;
