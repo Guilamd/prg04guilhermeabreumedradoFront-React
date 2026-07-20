@@ -14,6 +14,7 @@ function Carteiras() {
   React.useEffect(() => {
     api.get('/contas').then(res => {
       const mapped = res.data.map(c => ({
+        ...c,
         id: c.id,
         nome: c.descricao,
         subtexto: c.ativa ? 'Ativa' : 'Inativa',
@@ -34,8 +35,14 @@ function Carteiras() {
   const [adjustingSaldoId, setAdjustingSaldoId] = useState(null);
   const [novoSaldoAjuste, setNovoSaldoAjuste] = useState('');
 
-  const handleDeleteConta = (id) => {
-    setContas(contas.filter(c => c.id !== id));
+  const handleDeleteConta = async (id) => {
+    try {
+      await api.delete(`/contas/${id}`);
+      setContas(contas.filter(c => c.id !== id));
+    } catch(err) {
+      console.error(err);
+      alert('Erro ao deletar conta');
+    }
   };
 
   const handleAjustarSaldo = (id) => {
@@ -46,12 +53,45 @@ function Carteiras() {
     }
   };
 
-  const handleSalvarAjusteSaldo = (e) => {
+  const handleSalvarAjusteSaldo = async (e) => {
     e.preventDefault();
     if (!novoSaldoAjuste) return;
-    setContas(contas.map(c => c.id === adjustingSaldoId ? { ...c, saldo: novoSaldoAjuste } : c));
-    setAdjustingSaldoId(null);
-    setNovoSaldoAjuste('');
+
+    const contaOriginal = contas.find(c => c.id === adjustingSaldoId);
+    if (!contaOriginal) return;
+
+    let valorFloat = parseFloat(novoSaldoAjuste.toString().replace(/\./g, '').replace(',', '.'));
+    if (isNaN(valorFloat)) valorFloat = 0;
+
+    const dto = {
+      descricao: contaOriginal.descricao,
+      saldoAtual: valorFloat,
+      ativa: contaOriginal.ativa,
+      usuarioId: contaOriginal.usuarioId,
+      instituicaoFinanceiraId: contaOriginal.instituicaoFinanceiraId
+    };
+
+    try {
+      await api.put(`/contas/${adjustingSaldoId}`, dto);
+      
+      const res = await api.get('/contas');
+      const mapped = res.data.map(c => ({
+        ...c,
+        id: c.id,
+        nome: c.descricao,
+        subtexto: c.ativa ? 'Ativa' : 'Inativa',
+        saldo: (c.saldoAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}),
+        color: '#8B5CF6',
+        icone: 'bank'
+      }));
+      setContas(mapped);
+
+      setAdjustingSaldoId(null);
+      setNovoSaldoAjuste('');
+    } catch(err) {
+      console.error(err);
+      alert('Erro ao ajustar saldo');
+    }
   };
 
   const handleSalvarConta = async () => {
@@ -71,6 +111,7 @@ function Carteiras() {
       await api.post('/contas', dto);
       const res = await api.get('/contas');
       const mapped = res.data.map(c => ({
+        ...c,
         id: c.id,
         nome: c.descricao,
         subtexto: c.ativa ? 'Ativa' : 'Inativa',
@@ -189,7 +230,9 @@ function Carteiras() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
               Fatura atual
             </span>
-            <strong style={{ fontSize: '3.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>R$ 0,00</strong>
+            <strong style={{ fontSize: '3.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>
+              R$ {contas.filter(c => c.descricao.toLowerCase().includes('cartão')).reduce((acc, c) => acc + (c.saldoAtual || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+            </strong>
           </article>
 
           {/* Seus Cartões */}
@@ -199,73 +242,54 @@ function Carteiras() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
               </div>
               <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Seus cartões</strong>
-              <span className="text-muted" style={{ fontSize: '0.8rem' }}>(1)</span>
+              <span className="text-muted" style={{ fontSize: '0.8rem' }}>({contas.filter(c => c.descricao.toLowerCase().includes('cartão')).length})</span>
             </div>
 
-            <article className="glass-card" style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}>
-              {/* Efeito de círculo de fundo */}
-              <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }}></div>
+            {contas.filter(c => c.descricao.toLowerCase().includes('cartão')).map((cartao, idx) => {
+              let bgColor = '#3B82F6';
+              if (cartao.descricao.toLowerCase().includes('mercado pago')) bgColor = '#00B1EA';
+              if (cartao.descricao.toLowerCase().includes('nubank')) bgColor = '#8A05BE';
+              if (cartao.descricao.toLowerCase().includes('itaú')) bgColor = '#EC7000';
               
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#00B1EA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                    </div>
-                    <div>
-                      <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1rem' }}>Mercado Pago</strong>
-                      <span className="text-muted" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>**** 9305</span>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
-                    Pago
-                  </span>
-                </div>
-
-                <div style={{ marginBottom: '24px' }}>
-                  <span className="text-muted" style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                    Fatura estimada <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                  </span>
-                  <strong style={{ display: 'block', fontSize: '2rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '8px' }}>R$ 0,00</strong>
-                  <span className="text-muted" style={{ fontSize: '0.75rem' }}>Sem transações no ciclo · sync 17/jul/2026 16:17</span>
-                  <div style={{ marginTop: '12px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#F59E0B', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                      Definir fechamento
-                    </span>
-                    <span className="text-muted" style={{ fontSize: '0.8rem', marginLeft: '8px' }}>Vence <strong style={{ color: 'var(--text-primary)', fontWeight: '500' }}>10 de ago.</strong></span>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span className="text-muted" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                      Limite total
-                    </span>
-                    <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>R$ 3,5k</strong>
-                  </div>
-                  <div style={{ width: '100%', height: '8px', background: 'var(--accent-emerald)', borderRadius: '4px', overflow: 'hidden', display: 'flex', marginBottom: '12px' }}>
-                    <div style={{ width: '15%', height: '100%', background: '#3B82F6' }}></div>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3B82F6' }}></div>
-                      <span className="text-muted" style={{ fontSize: '0.75rem' }}>Usado</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>R$ 456</strong>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-emerald)' }}></div>
-                        <span className="text-muted" style={{ fontSize: '0.75rem' }}>Disponível</span>
+              return (
+                <article key={cartao.id || idx} className="glass-card" style={{ padding: '24px', position: 'relative', overflow: 'hidden', marginBottom: '16px' }}>
+                  <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }}></div>
+                  
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        </div>
+                        <div>
+                          <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1rem' }}>{cartao.descricao}</strong>
+                          <span className="text-muted" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>**** {(Math.floor(Math.random() * 9000) + 1000)}</span>
+                        </div>
                       </div>
-                      <strong style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)' }}>R$ 3,0k</strong>
+                      <span style={{ fontSize: '0.75rem', color: cartao.saldoAtual > 0 ? 'var(--accent-red)' : 'var(--accent-emerald)', background: cartao.saldoAtual > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                        {cartao.saldoAtual > 0 ? 'Em aberto' : 'Pago'}
+                      </span>
+                    </div>
+
+                    <div style={{ marginBottom: '24px' }}>
+                      <span className="text-muted" style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                        Fatura estimada <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                      </span>
+                      <strong style={{ display: 'block', fontSize: '2rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '8px' }}>R$ {Math.abs(cartao.saldoAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+                      <span className="text-muted" style={{ fontSize: '0.75rem' }}>{cartao.saldoAtual > 0 ? 'Existem transações no ciclo' : 'Sem transações no ciclo'}</span>
+                      <div style={{ marginTop: '12px' }}>
+                        <span style={{ fontSize: '0.8rem', color: '#F59E0B', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                          Definir fechamento
+                        </span>
+                        <span className="text-muted" style={{ fontSize: '0.8rem', marginLeft: '8px' }}>Vence <strong style={{ color: 'var(--text-primary)', fontWeight: '500' }}>10 do prox. mês</strong></span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </article>
+                </article>
+              );
+            })}
 
             {/* Alerta de Fatura Estimada */}
             <div style={{ background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px', marginTop: '16px' }}>
