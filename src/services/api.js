@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Instância base do Axios configurada para a porta padrão do Spring Boot
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://prg04guilhermeabreumedradoback-end.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
