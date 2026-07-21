@@ -5,10 +5,7 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -16,12 +13,17 @@ export function AuthProvider({ children }) {
         if (parsedUser.nome && !parsedUser.name) {
           parsedUser.name = parsedUser.nome;
         }
-        setUser(parsedUser);
+        return parsedUser;
       } catch (e) {
-        // Fallback for old string format
-        setUser({ name: storedUser });
+        return { name: storedUser };
       }
     }
+    return null;
+  });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Inicialização movida para o hook useState para evitar logout na montagem inicial
   }, []);
 
   const login = async (email, password) => {

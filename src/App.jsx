@@ -10,10 +10,12 @@ import Carteiras from './pages/Carteiras';
 import Transacoes from './pages/Transacoes';
 import Metas from './pages/Metas';
 import Configuracoes from './pages/Configuracoes';
+import { PreferencesProvider } from './contexts/PreferencesContext';
 
 function App() {
   return (
-    <Routes>
+    <PreferencesProvider>
+      <Routes>
       {/* Rota para a página de login (sem o layout principal) */}
       <Route path="/login" element={<Login />} />
 
@@ -27,6 +29,7 @@ function App() {
         <Route path="configuracoes" element={<Configuracoes />} />
       </Route>
     </Routes>
+  </PreferencesProvider>
   );
 }
 

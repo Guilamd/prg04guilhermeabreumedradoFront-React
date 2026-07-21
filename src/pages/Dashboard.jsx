@@ -4,33 +4,34 @@ import { useAuth } from '../contexts/AuthContext';
 import { IconMoney, IconCard, IconArrowUpRight, IconArrowDownLeft, IconTrendingDown, IconTrendingUp, DynamicBankIcon } from '../components/Icons';
 import api from '../services/api';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { formatCurrency } from '../utils/currency';
 
 /* ===================== COMPONENTES INTERNOS ===================== */
 
 function InsightCard({ user, despesasTotais }) {
   return (
-    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px', justifyContent: 'space-between', background: 'radial-gradient(circle at top left, rgba(0, 230, 118, 0.08) 0%, rgba(0,0,0,0) 70%), var(--surface-color)', border: '1px solid rgba(0, 230, 118, 0.15)' }}>
+    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px', justifyContent: 'space-between', background: 'radial-gradient(circle at top left, var(--insight-gradient-start) 0%, var(--insight-gradient-end) 70%), var(--surface-color)', border: '1px solid var(--insight-border)' }}>
       <div style={{ flex: 1 }}>
         <h3 style={{ color: 'var(--accent-emerald)', fontSize: '1.6rem', fontWeight: '500', marginBottom: '12px', lineHeight: 1.2 }}>
           Seu dinheiro está te esperando para uma conversa.
         </h3>
         <p className="text-muted" style={{ fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>
-          {user ? user.name.split(' ')[0] : 'Usuário'}, seus gastos já somam R${despesasTotais.toLocaleString('pt-BR', {minimumFractionDigits: 2})}. Fique atento!
+          {user ? user.name.split(' ')[0] : 'Usuário'}, seus gastos já somam {formatCurrency(despesasTotais)}. Fique atento!
         </p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '12px' }}>
-        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
+        <div style={{ padding: '16px', background: 'var(--card-inner-bg)', borderRadius: '12px', border: '1px solid var(--card-inner-border)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Gasto Atual</span>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '1.2rem' }}>R$ {despesasTotais.toLocaleString('pt-BR')}</strong>
+          <strong className="blur-balance" style={{ color: 'var(--text-primary)', fontSize: '1.2rem' }}>{formatCurrency(despesasTotais)}</strong>
         </div>
-        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
+        <div style={{ padding: '16px', background: 'var(--card-inner-bg)', borderRadius: '12px', border: '1px solid var(--card-inner-border)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Status</span>
           <strong style={{ color: 'var(--accent-emerald)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
             Sob Controle
           </strong>
         </div>
-        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
+        <div style={{ padding: '16px', background: 'var(--card-inner-bg)', borderRadius: '12px', border: '1px solid var(--card-inner-border)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Maior Gasto</span>
           <strong style={{ color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <IconMoney size={16} color="var(--accent-emerald)" /> Alimentação
@@ -92,7 +93,7 @@ function RitmoGastosCard({ despesasTotais, transacoes }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-        <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>R$ {despesasTotais.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+        <strong className="blur-balance" style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>{formatCurrency(despesasTotais)}</strong>
       </div>
       <span className="text-muted" style={{ fontSize: '0.75rem', marginBottom: '14px' }}>Mês atual</span>
 
@@ -101,16 +102,16 @@ function RitmoGastosCard({ despesasTotais, transacoes }) {
           <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
             <defs>
               <linearGradient id="colorGasto" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-rose)" stopOpacity={0.3}/>
+                <stop offset="5%" stopColor="var(--accent-rose)" style={{ stopOpacity: 'var(--chart-area-opacity, 0.3)' }}/>
                 <stop offset="95%" stopColor="var(--accent-rose)" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <XAxis dataKey="dia" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} minTickGap={20} />
-            <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
+            <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} />
             <Tooltip 
-              contentStyle={{ background: 'rgba(0, 0, 0, 0.95)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+              contentStyle={{ background: 'var(--tooltip-bg)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
               itemStyle={{ color: 'var(--accent-rose)' }}
-              formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Acumulado']}
+              formatter={(value) => [formatCurrency(value), 'Acumulado']}
               labelFormatter={(label) => `Dia ${label}`}
             />
             <Area type="monotone" dataKey="gasto" stroke="var(--accent-rose)" strokeWidth={3} fillOpacity={1} fill="url(#colorGasto)" />
@@ -122,7 +123,7 @@ function RitmoGastosCard({ despesasTotais, transacoes }) {
 }
 
 function ContasCorrentesCard({ contas }) {
-  const saldoTotal = contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2});
+  const saldoTotal = contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0);
 
   return (
     <article className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -134,7 +135,7 @@ function ContasCorrentesCard({ contas }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '24px' }}>
-        <strong style={{ fontSize: '1.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>R$ {saldoTotal}</strong>
+        <strong className="blur-balance" style={{ fontSize: '2.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>{formatCurrency(saldoTotal)}</strong>
         <span className="text-muted" style={{ fontSize: '0.85rem' }}>saldo total</span>
       </div>
 
@@ -149,7 +150,7 @@ function ContasCorrentesCard({ contas }) {
                 <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{c.descricao}</strong>
               </div>
             </div>
-            <strong style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>R$ {(c.saldoAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+            <strong className="blur-balance" style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>{formatCurrency(c.saldoAtual || 0)}</strong>
           </div>
         ))}
       </div>
@@ -173,7 +174,7 @@ function TransacoesRecentesCard({ transacoes }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
                 width: '32px', height: '32px', borderRadius: '50%', 
-                background: item.tipoMovimentacao === 'RECEITA' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', 
+                background: item.tipoMovimentacao === 'RECEITA' ? 'var(--icon-bg-emerald)' : 'var(--icon-bg-rose)', 
                 display: 'flex', alignItems: 'center', justifyContent: 'center' 
               }}>
                 {item.tipoMovimentacao === 'RECEITA' 
@@ -183,11 +184,11 @@ function TransacoesRecentesCard({ transacoes }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{item.titulo}</span>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>{item.categoriaNome || 'Sem Categoria'}</span>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: 'var(--track-bg)', color: 'var(--text-secondary)' }}>{item.categoriaNome || 'Sem Categoria'}</span>
               </div>
             </div>
-            <strong style={{ fontSize: '0.9rem', color: item.tipoMovimentacao === 'RECEITA' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
-              {item.tipoMovimentacao === 'RECEITA' ? '+' : '-'} R$ {item.valor.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+            <strong className="blur-balance" style={{ fontSize: '0.9rem', color: item.tipoMovimentacao === 'RECEITA' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
+              {item.tipoMovimentacao === 'RECEITA' ? '+' : '-'} {formatCurrency(item.valor)}
             </strong>
           </div>
         ))}
@@ -232,8 +233,8 @@ function CategoriasCard({ transacoes }) {
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>R$ {valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
+                <span className="blur-balance" style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{formatCurrency(valor)}</span>
+                <div style={{ flex: 1, height: '4px', background: 'var(--track-bg)', borderRadius: '2px', overflow: 'hidden' }}>
                   <div style={{ width: `${barWidth}%`, height: '100%', background: 'var(--accent-purple)', borderRadius: '2px' }}></div>
                 </div>
               </div>

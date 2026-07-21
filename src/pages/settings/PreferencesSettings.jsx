@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IconArrowLeft } from '../../components/Icons';
+import CustomSelect from '../../components/CustomSelect';
+import { getCurrencyPreference, setCurrencyPreference, getLanguagePreference, setLanguagePreference } from '../../utils/currency';
+import { usePreferences } from '../../contexts/PreferencesContext';
 
 /* Componente simples de Toggle (Switch) */
-function ToggleSwitch({ label, description, defaultChecked }) {
-  const [checked, setChecked] = useState(defaultChecked);
-
+function ToggleSwitch({ label, description, checked, onChange }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ paddingRight: '16px' }}>
@@ -12,7 +13,7 @@ function ToggleSwitch({ label, description, defaultChecked }) {
         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{description}</span>
       </div>
       <button 
-        onClick={() => setChecked(!checked)}
+        onClick={() => onChange(!checked)}
         style={{
           width: '44px', height: '24px', borderRadius: '12px',
           background: checked ? 'var(--accent-emerald)' : 'rgba(255,255,255,0.1)',
@@ -29,6 +30,8 @@ function ToggleSwitch({ label, description, defaultChecked }) {
 }
 
 function PreferencesSettings({ onBack }) {
+  const { hideBalances, setHideBalances, theme, setTheme, fluidAnimations, setFluidAnimations } = usePreferences();
+
   const selectStyle = {
     width: '100%', padding: '14px', borderRadius: '12px',
     background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -54,26 +57,34 @@ function PreferencesSettings({ onBack }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={labelStyle}>Moeda Principal</label>
-            <div style={{ position: 'relative' }}>
-              <select style={selectStyle} defaultValue="BRL">
-                <option value="BRL" style={{ color: '#000' }}>Real (BRL)</option>
-                <option value="USD" style={{ color: '#000' }}>Dólar (USD)</option>
-                <option value="EUR" style={{ color: '#000' }}>Euro (EUR)</option>
-              </select>
-              <div style={{ position: 'absolute', right: '16px', top: '16px', pointerEvents: 'none' }}>▼</div>
-            </div>
+            <CustomSelect
+              value={getCurrencyPreference()}
+              onChange={(val) => {
+                setCurrencyPreference(val);
+                window.location.reload();
+              }}
+              options={[
+                { label: 'Real (BRL)', value: 'BRL' },
+                { label: 'Dólar (USD)', value: 'USD' },
+                { label: 'Euro (EUR)', value: 'EUR' }
+              ]}
+            />
           </div>
           
           <div>
             <label style={labelStyle}>Idioma</label>
-            <div style={{ position: 'relative' }}>
-              <select style={selectStyle} defaultValue="pt-BR">
-                <option value="pt-BR" style={{ color: '#000' }}>Português (Brasil)</option>
-                <option value="en-US" style={{ color: '#000' }}>English (US)</option>
-                <option value="es" style={{ color: '#000' }}>Español</option>
-              </select>
-              <div style={{ position: 'absolute', right: '16px', top: '16px', pointerEvents: 'none' }}>▼</div>
-            </div>
+            <CustomSelect
+              value={getLanguagePreference()}
+              onChange={(val) => {
+                setLanguagePreference(val);
+                window.location.reload();
+              }}
+              options={[
+                { label: 'Português (Brasil)', value: 'pt-BR' },
+                { label: 'English (US)', value: 'en-US' },
+                { label: 'Español', value: 'es' }
+              ]}
+            />
           </div>
         </div>
 
@@ -82,17 +93,14 @@ function PreferencesSettings({ onBack }) {
           <ToggleSwitch 
             label="Ocultar saldos por padrão" 
             description="Seus saldos já estarão borrados sempre que abrir o aplicativo." 
-            defaultChecked={false} 
-          />
-          <ToggleSwitch 
-            label="Modo escuro (Dark Mode)" 
-            description="Utilizar o visual Glassmorphism Neon." 
-            defaultChecked={true} 
+            checked={hideBalances}
+            onChange={setHideBalances}
           />
           <ToggleSwitch 
             label="Animações fluidas" 
             description="Desative para melhorar o desempenho em dispositivos antigos." 
-            defaultChecked={true} 
+            checked={fluidAnimations}
+            onChange={setFluidAnimations}
           />
         </div>
         

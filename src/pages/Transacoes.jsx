@@ -355,7 +355,7 @@ function Transacoes() {
           <IconArrowDownRight size={24} color="var(--accent-rose)" />
           <div>
             <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Despesas</span>
-            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-rose)' }}>R$ {totais.despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+            <strong className="blur-balance" style={{ fontSize: '1.4rem', color: 'var(--accent-rose)' }}>R$ {totais.despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
           </div>
         </div>
 
@@ -363,7 +363,7 @@ function Transacoes() {
           <IconArrowUpRight size={24} color="var(--accent-emerald)" />
           <div>
             <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Receitas</span>
-            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {totais.receitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+            <strong className="blur-balance" style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {totais.receitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
           </div>
         </div>
 
@@ -371,7 +371,7 @@ function Transacoes() {
           <IconArrowLeftRight size={24} color="var(--accent-emerald)" />
           <div>
             <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Saldo</span>
-            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+            <strong className="blur-balance" style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
           </div>
         </div>
       </div>
@@ -434,7 +434,7 @@ function Transacoes() {
                 </div>
               </div>
               <div className="text-muted" style={{ fontSize: '0.85rem' }}>{t.conta}</div>
-              <div style={{ textAlign: 'right', fontWeight: '600', fontSize: '0.95rem', color: t.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
+              <div className="blur-balance" style={{ textAlign: 'right', fontWeight: '600', fontSize: '0.95rem', color: t.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
                 {t.tipo === 'receita' ? '+' : '-'} R$ {t.valor}
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
@@ -546,7 +546,7 @@ function Transacoes() {
               </div>
               <div style={{ flex: 1 }}>
                 <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>{detalhesTransacao.descricao}</h3>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: detalhesTransacao.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
+                <div className="blur-balance" style={{ fontSize: '1.8rem', fontWeight: 'bold', color: detalhesTransacao.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
                   {detalhesTransacao.tipo === 'receita' ? '+' : '-'} R$ {detalhesTransacao.valor}
                 </div>
               </div>
@@ -588,7 +588,7 @@ function Transacoes() {
                           <span className="text-muted" style={{ fontSize: '0.75rem' }}>{t.data} / {anoAtual}</span>
                         </div>
                       </div>
-                      <div style={{ fontWeight: '600', fontSize: '0.9rem', color: t.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
+                      <div className="blur-balance" style={{ fontWeight: '600', fontSize: '0.9rem', color: t.tipo === 'receita' ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
                         {t.tipo === 'receita' ? '+' : '-'} R$ {t.valor}
                       </div>
                     </div>

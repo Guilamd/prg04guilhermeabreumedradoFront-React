@@ -203,7 +203,7 @@ function Carteiras() {
         <div style={{ display: 'flex', gap: '24px' }}>
           <article className="glass-card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <span className="text-muted" style={{ fontSize: '0.9rem' }}>Patrimônio Total</span>
-            <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>R$ {saldoFormatado}</strong>
+            <strong className="blur-balance" style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>R$ {saldoFormatado}</strong>
           </article>
           <article className="glass-card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <span className="text-muted" style={{ fontSize: '0.9rem' }}>Bancos Conectados</span>
@@ -240,7 +240,7 @@ function Carteiras() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
               Fatura atual
             </span>
-            <strong style={{ fontSize: '3.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>
+            <strong className="blur-balance" style={{ fontSize: '3.5rem', color: 'var(--text-primary)', lineHeight: 1 }}>
               R$ {contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
             </strong>
           </article>
@@ -283,14 +283,14 @@ function Carteiras() {
                               <span className="text-muted" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>**** {(Math.floor(Math.random() * 9000) + 1000)}</span>
                             </div>
                           </div>
-                          <span style={{ fontSize: '0.85rem', color: cartao.saldoAtual > 0 ? 'var(--accent-rose)' : 'var(--accent-emerald)', background: cartao.saldoAtual > 0 ? 'rgba(255, 23, 68, 0.1)' : 'rgba(0, 230, 118, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '500' }}>
+                          <span style={{ fontSize: '0.85rem', color: cartao.saldoAtual > 0 ? 'var(--accent-rose)' : 'var(--accent-emerald)', background: cartao.saldoAtual > 0 ? 'var(--icon-bg-rose)' : 'var(--icon-bg-emerald)', padding: '6px 14px', borderRadius: '20px', fontWeight: '500' }}>
                             {cartao.saldoAtual > 0 ? 'Em aberto' : 'Pago'}
                           </span>
                         </div>
 
                         <div>
                           <span className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Fatura estimada</span>
-                          <strong style={{ display: 'block', fontSize: '2.5rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '16px' }}>R$ {Math.abs(cartao.saldoAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+                          <strong className="blur-balance" style={{ display: 'block', fontSize: '2.5rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '16px' }}>R$ {Math.abs(cartao.saldoAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
                           <span className="text-muted" style={{ fontSize: '0.85rem' }}>Vencimento previsto para o dia <strong style={{ color: 'var(--text-primary)' }}>10</strong></span>
                         </div>
                       </div>

@@ -44,7 +44,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div className="text-emerald" style={{ fontWeight: '600', fontSize: '1.05rem' }}>
+                <div className="text-emerald blur-balance" style={{ fontWeight: '600', fontSize: '1.05rem' }}>
                   R$ {conta.saldo}
                 </div>
                 <div style={{ position: 'relative' }}>
@@ -90,7 +90,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
             <div style={{ padding: '24px' }}>
               <div style={{ marginBottom: '24px', textAlign: 'center' }}>
                 <span className="text-muted" style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px' }}>Saldo Atual</span>
-                <strong style={{ fontSize: '2.2rem', color: 'var(--text-primary)' }}>R$ {selectedAccount.saldo}</strong>
+                <strong className="blur-balance" style={{ fontSize: '2.2rem', color: 'var(--text-primary)' }}>R$ {selectedAccount.saldo}</strong>
               </div>
               
               <h4 style={{ marginBottom: '16px', color: 'var(--text-primary)', borderBottom: '1px solid var(--surface-border)', paddingBottom: '8px' }}>Extrato da Conta</h4>
@@ -107,7 +107,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
                       <span className="text-muted" style={{ fontSize: '0.75rem' }}>Hoje, 14:30</span>
                     </div>
                   </div>
-                  <strong className="text-emerald" style={{ fontSize: '0.9rem' }}>+ R$ 150,00</strong>
+                  <strong className="text-emerald blur-balance" style={{ fontSize: '0.9rem' }}>+ R$ 150,00</strong>
                 </div>
 
                 {/* Lançamento 2 */}
@@ -121,7 +121,7 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
                       <span className="text-muted" style={{ fontSize: '0.75rem' }}>Ontem</span>
                     </div>
                   </div>
-                  <strong className="text-rose" style={{ fontSize: '0.9rem' }}>- R$ 89,90</strong>
+                  <strong className="text-rose blur-balance" style={{ fontSize: '0.9rem' }}>- R$ 89,90</strong>
                 </div>
               </div>
 

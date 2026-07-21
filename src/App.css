@@ -8,7 +8,7 @@
 
 /* Sidebar Styles */
 .sidebar {
-  background: var(--bg-color);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--surface-border);
   backdrop-filter: var(--glass-blur);
   padding: 32px 24px;
@@ -49,9 +49,9 @@
 }
 
 .nav-link.active {
-  background: var(--accent-purple-glow);
-  color: var(--accent-purple);
-  border-left: 3px solid var(--accent-purple);
+  background: var(--menu-active-bg);
+  color: var(--menu-active-text);
+  border-left: 3px solid var(--menu-active-border);
 }
 
 /* Header Styles */
