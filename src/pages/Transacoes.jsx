@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { IconMoney, IconMoreVertical } from '../components/Icons';
+import { IconMoney, IconMoreVertical, IconSearch, IconCalendar, IconArrowDownRight, IconArrowUpRight, IconArrowLeftRight } from '../components/Icons';
 import Modal from '../components/Modal';
 import CustomSelect from '../components/CustomSelect';
 import DatePicker from '../components/DatePicker';
@@ -8,7 +8,12 @@ import api from '../services/api';
 function Transacoes() {
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
-  const [selectedDate, setSelectedDate] = useState('2026-06-15');
+  const [filtroConta, setFiltroConta] = useState('todas');
+  const [filtroCategoria, setFiltroCategoria] = useState('todas');
+  const [filtroOrdem, setFiltroOrdem] = useState('recentes');
+  const [mostrarOcultos, setMostrarOcultos] = useState(false);
+  
+  const [selectedDate, setSelectedDate] = useState('2026-07-15');
   const anoAtual = new Date().getFullYear();
 
   const [transacoes, setTransacoes] = useState([]);
@@ -31,7 +36,9 @@ function Transacoes() {
         descricao: t.titulo,
         categoria: t.categoriaNome || 'Sem Categoria',
         conta: t.contaDescricao || 'Conta Manual',
-        valor: t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+        valor: typeof t.valor === 'number' ? t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : t.valor,
+        valorRaw: typeof t.valor === 'number' ? t.valor : parseFloat(t.valor) || 0,
+        dataHoraRaw: t.dataHora,
         tipo: t.tipoMovimentacao === 'RECEITA' ? 'receita' : 'despesa'
       }));
       setTransacoes(mapped);
@@ -168,7 +175,9 @@ function Transacoes() {
         descricao: t.titulo,
         categoria: t.categoriaNome || 'Sem Categoria',
         conta: t.contaDescricao || 'Conta Manual',
-        valor: t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+        valor: typeof t.valor === 'number' ? t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : t.valor,
+        valorRaw: typeof t.valor === 'number' ? t.valor : parseFloat(t.valor) || 0,
+        dataHoraRaw: t.dataHora,
         tipo: t.tipoMovimentacao === 'RECEITA' ? 'receita' : 'despesa'
       }));
       setTransacoes(mapped);
@@ -254,59 +263,145 @@ function Transacoes() {
     return <IconMoney size={size} color="var(--text-secondary)" />;
   };
 
-  // Filtro simples no front-end para dar a sensação de funcionamento
+  // Filtros Avançados
   const transacoesFiltradas = transacoes.filter(t => {
     const matchTexto = t.descricao.toLowerCase().includes(filtroTexto.toLowerCase()) || t.categoria.toLowerCase().includes(filtroTexto.toLowerCase());
     const matchTipo = filtroTipo === 'todos' || t.tipo === filtroTipo;
-    return matchTexto && matchTipo;
+    const matchConta = filtroConta === 'todas' || t.conta === filtroConta;
+    const matchCategoria = filtroCategoria === 'todas' || t.categoria === filtroCategoria;
+    
+    // Filtrar pelo mês selecionado no DatePicker
+    let matchMes = true;
+    if (t.dataHoraRaw) {
+       const tData = new Date(t.dataHoraRaw);
+       const sData = new Date(selectedDate + 'T12:00:00');
+       if (tData.getFullYear() !== sData.getFullYear() || tData.getMonth() !== sData.getMonth()) {
+         matchMes = false;
+       }
+    }
+
+    return matchTexto && matchTipo && matchConta && matchCategoria && matchMes;
+  }).sort((a, b) => {
+    const timeA = new Date(a.dataHoraRaw || 0).getTime();
+    const timeB = new Date(b.dataHoraRaw || 0).getTime();
+    return filtroOrdem === 'recentes' ? timeB - timeA : timeA - timeB;
   });
+
+  const totais = transacoesFiltradas.reduce((acc, curr) => {
+    const val = curr.valorRaw || 0;
+    if (curr.tipo === 'despesa') acc.despesas += val;
+    if (curr.tipo === 'receita') acc.receitas += val;
+    return acc;
+  }, { despesas: 0, receitas: 0 });
+  const saldo = totais.receitas - totais.despesas;
 
   return (
     <section className="dashboard-grid">
-      <div className="col-span-12" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 30 }}>
-        <div>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Transações</h2>
-          <p className="text-muted">Acompanhe seu extrato detalhado e encontre lançamentos específicos.</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+      {/* 1. Barra de Filtros Superior */}
+      <div className="col-span-12" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', position: 'relative', zIndex: 30, paddingBottom: '4px', flexWrap: 'wrap' }}>
+        <div style={{ minWidth: '150px' }}>
           <DatePicker 
             value={selectedDate} 
             onChange={(dateStr) => setSelectedDate(dateStr)} 
+            variant="this-month"
           />
-          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-            + Novo Lançamento
-          </button>
+        </div>
+        <div style={{ minWidth: '160px' }}>
+          <CustomSelect 
+            value={filtroConta} 
+            onChange={(val) => setFiltroConta(val)} 
+            options={[{ value: 'todas', label: 'Todas Contas' }, ...contas.map(c => ({ value: c.descricao, label: c.descricao }))]} 
+          />
+        </div>
+        <div style={{ minWidth: '180px' }}>
+          <CustomSelect value={filtroTipo} onChange={(val) => setFiltroTipo(val)} options={[{ value: 'todos', label: 'Todas Transações' }, { value: 'receita', label: 'Receitas' }, { value: 'despesa', label: 'Despesas' }]} />
+        </div>
+        <div style={{ minWidth: '180px' }}>
+          <CustomSelect 
+            value={filtroOrdem} 
+            onChange={(val) => setFiltroOrdem(val)} 
+            options={[{ value: 'recentes', label: 'Data (mais recentes)' }, { value: 'antigas', label: 'Data (mais antigas)' }]} 
+          />
+        </div>
+        <div style={{ minWidth: '140px' }}>
+          <CustomSelect 
+            value={filtroCategoria} 
+            onChange={(val) => setFiltroCategoria(val)} 
+            options={[{ value: 'todas', label: 'Categorias' }, ...categorias.map(c => ({ value: c.nome, label: c.nome }))]} 
+          />
+        </div>
+        <div 
+          onClick={() => setMostrarOcultos(!mostrarOcultos)}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer' }}
+        >
+          <div style={{ width: '36px', height: '20px', borderRadius: '20px', background: mostrarOcultos ? 'var(--accent-emerald)' : 'rgba(255,255,255,0.1)', position: 'relative', transition: 'background 0.3s' }}>
+            <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: mostrarOcultos ? '18px' : '2px', transition: 'left 0.3s' }}></div>
+          </div>
+          <span>Mostrar ocultos</span>
         </div>
       </div>
 
-      {/* Barra de Filtros */}
-      <div className="glass-card col-span-12" style={{ marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center', padding: '16px 24px', position: 'relative', zIndex: 20 }}>
-        <input 
-          type="text" 
-          placeholder="Buscar por nome ou categoria..." 
-          value={filtroTexto}
-          onChange={(e) => setFiltroTexto(e.target.value)}
-          style={{ 
-            flex: 1, 
-            padding: '12px 16px', 
-            borderRadius: '8px', 
-            border: '1px solid var(--surface-border)', 
-            background: 'rgba(0,0,0,0.2)', 
-            color: 'var(--text-primary)',
-            outline: 'none'
-          }} 
-        />
-        <div style={{ width: '220px' }}>
-          <CustomSelect 
-            value={filtroTipo}
-            onChange={(val) => setFiltroTipo(val)}
-            options={[
-              { value: 'todos', label: 'Todas as transações' },
-              { value: 'receita', label: 'Somente Entradas' },
-              { value: 'despesa', label: 'Somente Saídas' }
-            ]}
+      {/* 2. Grid de Resumos 2x2 */}
+      <div className="col-span-12" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+        <div className="glass-card" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>#</span>
+          <div>
+            <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Total</span>
+            <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{transacoesFiltradas.length}</strong>
+          </div>
+        </div>
+        
+        <div className="glass-card" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <IconArrowDownRight size={24} color="var(--accent-rose)" />
+          <div>
+            <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Despesas</span>
+            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-rose)' }}>R$ {totais.despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+          </div>
+        </div>
+
+        <div className="glass-card" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <IconArrowUpRight size={24} color="var(--accent-emerald)" />
+          <div>
+            <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Receitas</span>
+            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {totais.receitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+          </div>
+        </div>
+
+        <div className="glass-card" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <IconArrowLeftRight size={24} color="var(--accent-emerald)" />
+          <div>
+            <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Saldo</span>
+            <strong style={{ fontSize: '1.4rem', color: 'var(--accent-emerald)' }}>R$ {saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Barra de Busca e Botão */}
+      <div className="col-span-12" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ position: 'relative', width: '320px' }}>
+          <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '12px', color: 'var(--text-secondary)', display: 'flex' }}>
+            <IconSearch size={18} />
+          </div>
+          <input 
+            type="text" 
+            placeholder="Buscar transações..." 
+            value={filtroTexto}
+            onChange={(e) => setFiltroTexto(e.target.value)}
+            style={{ 
+              width: '100%', 
+              padding: '10px 16px 10px 40px', 
+              borderRadius: '8px', 
+              border: '1px solid var(--surface-border)', 
+              background: 'rgba(0,0,0,0.2)', 
+              color: 'var(--text-primary)',
+              outline: 'none',
+              fontSize: '0.9rem'
+            }} 
           />
         </div>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+          + Nova Transação
+        </button>
       </div>
 
       {/* Tabela de Transações */}

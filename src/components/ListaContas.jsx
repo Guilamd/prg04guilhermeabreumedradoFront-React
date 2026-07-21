@@ -35,8 +35,8 @@ function ListaContas({ contas = [], onDeleteConta, onAjustarSaldo }) {
               onClick={() => setSelectedAccount(conta)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: conta.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
-                  <DynamicBankIcon bankName={conta.nome} size={20} color="#fff" />
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
+                  <DynamicBankIcon bankName={conta.nome} size={24} color="#fff" />
                 </div>
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{conta.nome}</strong>

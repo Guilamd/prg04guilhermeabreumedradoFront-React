@@ -9,7 +9,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 
 function InsightCard({ user, despesasTotais }) {
   return (
-    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px', justifyContent: 'space-between' }}>
+    <article className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '420px', justifyContent: 'space-between', background: 'radial-gradient(circle at top left, rgba(0, 230, 118, 0.08) 0%, rgba(0,0,0,0) 70%), var(--surface-color)', border: '1px solid rgba(0, 230, 118, 0.15)' }}>
       <div style={{ flex: 1 }}>
         <h3 style={{ color: 'var(--accent-emerald)', fontSize: '1.6rem', fontWeight: '500', marginBottom: '12px', lineHeight: 1.2 }}>
           Seu dinheiro está te esperando para uma conversa.
@@ -20,17 +20,17 @@ function InsightCard({ user, despesasTotais }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr', gap: '12px' }}>
-        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Gasto Atual</span>
           <strong style={{ color: 'var(--text-primary)', fontSize: '1.2rem' }}>R$ {despesasTotais.toLocaleString('pt-BR')}</strong>
         </div>
-        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Status</span>
           <strong style={{ color: 'var(--accent-emerald)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
             Sob Controle
           </strong>
         </div>
-        <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
           <span className="text-muted" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Maior Gasto</span>
           <strong style={{ color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <IconMoney size={16} color="var(--accent-emerald)" /> Alimentação
@@ -108,7 +108,7 @@ function RitmoGastosCard({ despesasTotais, transacoes }) {
             <XAxis dataKey="dia" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} minTickGap={20} />
             <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
             <Tooltip 
-              contentStyle={{ background: 'rgba(11, 13, 23, 0.95)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+              contentStyle={{ background: 'rgba(0, 0, 0, 0.95)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
               itemStyle={{ color: 'var(--accent-rose)' }}
               formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Acumulado']}
               labelFormatter={(label) => `Dia ${label}`}

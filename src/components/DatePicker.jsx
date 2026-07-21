@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-export default function DatePicker({ value, onChange }) {
+export default function DatePicker({ value, onChange, variant = 'default' }) {
   const [isOpen, setIsOpen] = useState(false);
   
   // Parse initial value (YYYY-MM-DD) or use current date
@@ -107,35 +107,54 @@ export default function DatePicker({ value, onChange }) {
   const displayDate = () => {
     if (!value) return 'Selecione uma data';
     const [y, m, d] = value.split('-');
+    if (variant === 'pill') {
+      const mesIndex = parseInt(m, 10) - 1;
+      return `${meses[mesIndex]} de ${y}`;
+    }
+    if (variant === 'this-month') {
+      return 'Este mês';
+    }
     return `${d}/${m}/${y}`;
   };
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+    <div ref={containerRef} style={{ position: 'relative', width: variant === 'pill' ? 'auto' : '100%' }}>
       {/* Input simulado */}
       <div 
         onClick={() => setIsOpen(!isOpen)}
         style={{ 
           width: '100%', 
-          padding: '12px 16px', 
-          borderRadius: '8px', 
+          padding: variant === 'pill' ? '6px 16px' : '12px 16px', 
+          borderRadius: variant === 'pill' ? '20px' : '8px', 
           border: '1px solid var(--surface-border)', 
-          background: 'rgba(0,0,0,0.2)', 
+          background: variant === 'pill' ? 'transparent' : 'rgba(0,0,0,0.2)', 
           color: 'var(--text-primary)',
           cursor: 'pointer',
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: variant === 'pill' ? 'center' : 'space-between',
           alignItems: 'center',
-          fontSize: '0.95rem'
+          gap: variant === 'pill' ? '8px' : '0',
+          fontSize: variant === 'pill' ? '0.85rem' : '0.95rem',
+          fontWeight: variant === 'pill' ? 'bold' : 'normal'
         }}
       >
+        {variant === 'pill' && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        )}
         <span>{displayDate()}</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
+        {variant !== 'pill' && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        )}
       </div>
 
       {/* Popover do Calendário */}

@@ -161,3 +161,35 @@ export const IconTrendingDown = ({ size = 20, color = "currentColor" }) => (
     <polyline points="17 18 23 18 23 12"></polyline>
   </svg>
 );
+
+export const IconSearch = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+);
+
+export const IconCalendar = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+  </svg>
+);
+
+export const IconArrowDownRight = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="7" y1="7" x2="17" y2="17"></line>
+    <polyline points="17 7 17 17 7 17"></polyline>
+  </svg>
+);
+
+export const IconArrowLeftRight = ({ size = 20, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="16 3 21 8 16 13"></polyline>
+    <line x1="21" y1="8" x2="9" y2="8"></line>
+    <polyline points="8 21 3 16 8 11"></polyline>
+    <line x1="3" y1="16" x2="15" y2="16"></line>
+  </svg>
+);

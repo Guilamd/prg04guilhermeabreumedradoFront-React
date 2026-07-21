@@ -38,7 +38,7 @@ function Modal({ isOpen, onClose, title, children }) {
           width: '100%',
           maxWidth: '500px',
           padding: '32px',
-          background: 'rgba(11, 13, 23, 0.95)',
+          background: 'rgba(0, 0, 0, 0.95)',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
           position: 'relative'
         }}

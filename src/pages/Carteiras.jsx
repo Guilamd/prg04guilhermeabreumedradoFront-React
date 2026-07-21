@@ -5,12 +5,13 @@ import DatePicker from '../components/DatePicker';
 import Modal from '../components/Modal';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 function Carteiras() {
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
   const [contas, setContas] = useState([]);
+  const [faturasCartao, setFaturasCartao] = useState([]);
 
   const getCompanyDomain = (descricao) => {
     if (!descricao) return null;
@@ -21,6 +22,7 @@ function Carteiras() {
     if (desc.includes('bradesco')) return 'bradesco.com.br';
     if (desc.includes('santander')) return 'santander.com.br';
     if (desc.includes('inter')) return 'bancointer.com.br';
+    if (desc.includes('xp')) return 'xpi.com.br';
     return null;
   };
 
@@ -47,6 +49,38 @@ function Carteiras() {
 
   const [adjustingSaldoId, setAdjustingSaldoId] = useState(null);
   const [novoSaldoAjuste, setNovoSaldoAjuste] = useState('');
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const handlePrevMonth = () => {
+    const d = new Date(selectedDate + 'T12:00:00');
+    d.setMonth(d.getMonth() - 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+  
+  const handleNextMonth = () => {
+    const d = new Date(selectedDate + 'T12:00:00');
+    d.setMonth(d.getMonth() + 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+
+  // Buscar faturas reais sempre que mudar o cartão selecionado
+  React.useEffect(() => {
+    if (contas.length > 0 && contas[currentCardIndex]) {
+      const cartaoId = contas[currentCardIndex].id;
+      api.get(`/faturas?contaId=${cartaoId}&size=100&sort=dataVencimento,desc`)
+        .then(res => {
+          // O backend retorna um Page (content)
+          const data = res.data.content || [];
+          // O Pageable do backend já deve trazer ordenado, mas garantimos a ordem cronológica pro gráfico
+          const faturasOrdenadas = data.sort((a, b) => new Date(a.dataVencimento) - new Date(b.dataVencimento));
+          setFaturasCartao(faturasOrdenadas);
+        })
+        .catch(err => {
+          console.error("Erro ao buscar faturas", err);
+          setFaturasCartao([]);
+        });
+    }
+  }, [currentCardIndex, contas]);
 
   const handleDeleteConta = async (id) => {
     try {
@@ -163,9 +197,6 @@ function Carteiras() {
             <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Minhas Carteiras</h2>
             <p className="text-muted">Gerencie suas contas bancárias e integrações.</p>
           </div>
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-            + Adicionar Banco
-          </button>
         </div>
 
         {/* Patrimônio Total */}
@@ -179,40 +210,6 @@ function Carteiras() {
             <strong style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>{contas.length}</strong>
           </article>
         </div>
-
-        {/* Add Bank Form */}
-        {showForm && (
-          <div className="glass-card" style={{ marginBottom: '24px' }}>
-            <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Conectar nova conta</h3>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Nome da Instituição</label>
-                <input 
-                  type="text" placeholder="Ex: Nubank, Itaú..." 
-                  value={novaInstituicao} onChange={(e) => setNovaInstituicao(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Saldo Inicial (R$)</label>
-                <input 
-                  type="text" placeholder="0,00" 
-                  value={novoSaldo} onChange={(e) => setNovoSaldo(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'rgba(0,0,0,0.2)', color: 'var(--text-primary)' }} 
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Cor</label>
-                <input 
-                  type="color" 
-                  value={novaCor} onChange={(e) => setNovaCor(e.target.value)}
-                  style={{ width: '48px', height: '48px', padding: '0', border: 'none', borderRadius: '8px', background: 'transparent', cursor: 'pointer' }} 
-                />
-              </div>
-              <button className="btn-primary" onClick={handleSalvarConta}>Salvar Conta</button>
-            </div>
-          </div>
-        )}
 
         {/* Old Content (Contas + Open Finance) */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
@@ -248,135 +245,133 @@ function Carteiras() {
             </strong>
           </article>
 
-          {/* Seus Cartões */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '6px', display: 'flex' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-              </div>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Seus cartões</strong>
-              <span className="text-muted" style={{ fontSize: '0.8rem' }}>({contas.length})</span>
-            </div>
+          {/* Seus Cartões e Faturas Master Box */}
+          <article className="glass-card" style={{ padding: '32px', marginBottom: '24px' }}>
+            {/* Carrossel de Cartões (Um por vez com Setas) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+              <button 
+                onClick={() => setCurrentCardIndex(prev => prev > 0 ? prev - 1 : contas.length - 1)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-primary)', flexShrink: 0 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
 
-            {contas.map((cartao, idx) => {
-              let bgColor = '#3B82F6';
-              if (cartao.descricao.toLowerCase().includes('mercado pago')) bgColor = '#00B1EA';
-              if (cartao.descricao.toLowerCase().includes('nubank')) bgColor = '#8A05BE';
-              if (cartao.descricao.toLowerCase().includes('itaú')) bgColor = '#EC7000';
-              
-              return (
-                <article key={cartao.id || idx} className="glass-card" style={{ padding: '24px', position: 'relative', overflow: 'hidden', marginBottom: '16px' }}>
-                  <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }}></div>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                {contas.length > 0 && (() => {
+                  const cartao = contas[currentCardIndex];
+                  let bgColor = '#3B82F6';
+                  if (cartao.descricao.toLowerCase().includes('mercado pago')) bgColor = '#00B1EA';
+                  if (cartao.descricao.toLowerCase().includes('nubank')) bgColor = '#8A05BE';
+                  if (cartao.descricao.toLowerCase().includes('itaú')) bgColor = '#EC7000';
                   
-                  <div style={{ position: 'relative', zIndex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                          {getCompanyDomain(cartao.descricao) ? (
-                            <img 
-                              src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${getCompanyDomain(cartao.descricao)}&size=128`} 
-                              alt="Logo Banco" 
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                            />
-                          ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                          )}
+                  return (
+                    <div style={{ padding: '32px', background: 'rgba(0,0,0,0.4)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', animation: 'fadeIn 0.3s ease-out' }}>
+                      <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }}></div>
+                      
+                      <div style={{ position: 'relative', zIndex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                              {getCompanyDomain(cartao.descricao) ? (
+                                <img src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${getCompanyDomain(cartao.descricao)}&size=128`} alt="Logo Banco" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                              )}
+                            </div>
+                            <div>
+                              <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1.2rem' }}>{cartao.descricao}</strong>
+                              <span className="text-muted" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>**** {(Math.floor(Math.random() * 9000) + 1000)}</span>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: '0.85rem', color: cartao.saldoAtual > 0 ? 'var(--accent-rose)' : 'var(--accent-emerald)', background: cartao.saldoAtual > 0 ? 'rgba(255, 23, 68, 0.1)' : 'rgba(0, 230, 118, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '500' }}>
+                            {cartao.saldoAtual > 0 ? 'Em aberto' : 'Pago'}
+                          </span>
                         </div>
+
                         <div>
-                          <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1rem' }}>{cartao.descricao}</strong>
-                          <span className="text-muted" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>**** {(Math.floor(Math.random() * 9000) + 1000)}</span>
+                          <span className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Fatura estimada</span>
+                          <strong style={{ display: 'block', fontSize: '2.5rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '16px' }}>R$ {Math.abs(cartao.saldoAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+                          <span className="text-muted" style={{ fontSize: '0.85rem' }}>Vencimento previsto para o dia <strong style={{ color: 'var(--text-primary)' }}>10</strong></span>
                         </div>
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: cartao.saldoAtual > 0 ? 'var(--accent-red)' : 'var(--accent-emerald)', background: cartao.saldoAtual > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
-                        {cartao.saldoAtual > 0 ? 'Em aberto' : 'Pago'}
-                      </span>
                     </div>
-
-                    <div style={{ marginBottom: '24px' }}>
-                      <span className="text-muted" style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                        Fatura estimada <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                      </span>
-                      <strong style={{ display: 'block', fontSize: '2rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '8px' }}>R$ {Math.abs(cartao.saldoAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
-                      <span className="text-muted" style={{ fontSize: '0.75rem' }}>{cartao.saldoAtual > 0 ? 'Existem transações no ciclo' : 'Sem transações no ciclo'}</span>
-                      <div style={{ marginTop: '12px' }}>
-                        <span style={{ fontSize: '0.8rem', color: '#F59E0B', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                          Definir fechamento
-                        </span>
-                        <span className="text-muted" style={{ fontSize: '0.8rem', marginLeft: '8px' }}>Vence <strong style={{ color: 'var(--text-primary)', fontWeight: '500' }}>10 do prox. mês</strong></span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-
-            {/* Alerta de Fatura Estimada */}
-            <div style={{ background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '16px', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px', marginTop: '16px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" style={{ marginTop: '2px' }}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-              <span style={{ fontSize: '0.85rem', color: '#F59E0B', lineHeight: 1.4 }}>
-                Fatura estimada. Compras recentes podem levar 1-3 dias para aparecer via Open Finance. O app do banco pode mostrar um valor maior.
-              </span>
-            </div>
-          </div>
-
-          {/* Faturas Anteriores */}
-          <article className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '6px', display: 'flex' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
-                </div>
-                <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>Faturas anteriores</strong>
+                  );
+                })()}
               </div>
-              
-              <DatePicker 
-                value={selectedDate} 
-                onChange={(dateStr) => setSelectedDate(dateStr)} 
-              />
+
+              <button 
+                onClick={() => setCurrentCardIndex(prev => prev < contas.length - 1 ? prev + 1 : 0)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-primary)', flexShrink: 0 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
             </div>
 
-            {/* Gráfico de Barras */}
-            {/* Gráfico de Barras com Recharts */}
-            <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
-              {(() => {
-                const totalFatura = contas.reduce((acc, c) => acc + (c.saldoAtual || 0), 0);
-                
-                const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-                const dataAtual = new Date(selectedDate);
-                const mesAtualIndex = dataAtual.getMonth();
-                
-                const dados = [];
-                const multiplicadores = [1.2, 0.8, 1.1, 0.9, 0.95, 1.0]; 
-                
-                for (let i = 5; i >= 0; i--) {
-                  let indexMes = mesAtualIndex - i;
-                  if (indexMes < 0) indexMes += 12;
+            {/* Gráfico de Barras com Recharts (Dados Reais) */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '8px', display: 'flex' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                  </div>
+                  <strong style={{ fontSize: '1.15rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>Faturas anteriores</strong>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button className="btn-glass" onClick={handlePrevMonth} style={{ padding: '4px', borderRadius: '50%', display: 'flex', cursor: 'pointer' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  </button>
+                  <DatePicker 
+                    value={selectedDate} 
+                    onChange={(dateStr) => setSelectedDate(dateStr)} 
+                    variant="pill"
+                  />
+                  <button className="btn-glass" onClick={handleNextMonth} style={{ padding: '4px', borderRadius: '50%', display: 'flex', cursor: 'pointer' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </button>
+                </div>
+              </div>
+              <div style={{ height: '260px', width: '100%' }}>
+                {(() => {
+                  let dados = [];
+                  const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                  const dataAtual = new Date(selectedDate + 'T12:00:00');
                   
-                  dados.push({
-                    mes: mesesNomes[indexMes],
-                    fatura: totalFatura > 0 ? totalFatura * multiplicadores[5-i] : 0,
-                  });
-                }
-                
-                return (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dados} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                      <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} tickFormatter={(val) => Math.round(val)} />
-                      <Tooltip 
-                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                        contentStyle={{ backgroundColor: '#1E293B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#F8FAFC' }}
-                        itemStyle={{ color: '#F8FAFC', fontWeight: 'bold' }}
-                        formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Fatura']}
-                        labelStyle={{ color: '#94A3B8', marginBottom: '4px' }}
-                      />
-                      <Bar dataKey="fatura" fill="var(--accent-purple)" radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                );
-              })()}
+                  for (let i = 5; i >= 0; i--) {
+                    const d = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - i, 1);
+                    
+                    const fatura = faturasCartao.find(f => {
+                       const fData = new Date(f.dataVencimento || (f.mesAnoReferencia ? f.mesAnoReferencia + '-01T12:00:00' : new Date()));
+                       return fData.getFullYear() === d.getFullYear() && fData.getMonth() === d.getMonth();
+                    });
+
+                    dados.push({
+                      mes: mesesNomes[d.getMonth()],
+                      fatura: fatura && fatura.valorTotal > 0 ? fatura.valorTotal : 0
+                    });
+                  }
+
+                  return (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={dados} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                        <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: 'var(--font-main)' }} dy={10} />
+                        <YAxis hide={true} />
+                        <Tooltip 
+                          cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                          contentStyle={{ backgroundColor: '#0F0F11', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', color: '#FFFFFF', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}
+                          itemStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
+                          formatter={(value) => [`R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 'Fatura']}
+                          labelStyle={{ color: 'var(--text-muted)', marginBottom: '4px' }}
+                        />
+                        <Bar dataKey="fatura" radius={[8, 8, 8, 8]} barSize={80}>
+                          {dados.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={index === dados.length - 1 ? '#FFFFFF' : 'rgba(255,255,255,0.1)'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  );
+                })()}
+              </div>
             </div>
           </article>
 

@@ -3,7 +3,7 @@ import { IconMoney, IconArrowUpRight, IconArrowDownLeft, IconBarcode } from './I
 
 function DashboardSaldo() {
   return (
-    <article className="glass-card" style={{ padding: '32px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(30, 32, 45, 0.4) 100%)', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+    <article className="glass-card" style={{ padding: '32px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0.4) 100%)', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
           <IconMoney size={20} color="var(--text-secondary)" />

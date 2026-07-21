@@ -5,33 +5,33 @@
 
 :root {
   /* Colors - Dark Mode Base */
-  --bg-color: #0B0D17;
-  --surface-color: rgba(30, 32, 45, 0.4);
+  --bg-color: #000000;
+  --surface-color: #0F0F11;
   --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-hover: rgba(255, 255, 255, 0.03);
+  --surface-hover: #16161A;
 
   /* Colors - Accents */
   --accent-purple: #8B5CF6;
   --accent-purple-glow: rgba(139, 92, 246, 0.4);
-  --accent-emerald: #10B981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.2);
-  --accent-rose: #EF4444;
+  --accent-emerald: #00E676;
+  --accent-emerald-glow: rgba(0, 230, 118, 0.3);
+  --accent-rose: #FF1744;
 
   /* Text Colors */
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
   
   /* Legacy Vars for Auth.css */
   --neon-cyan: #00ffcc;
   --neon-green: #39ff14;
   --accent-red: #ff3366;
   --border-color: rgba(255, 255, 255, 0.08);
-  --font-family: 'Inter', sans-serif;
+  --font-family: 'Outfit', sans-serif;
   --text-main: #F8FAFC;
 
   /* Typography */
-  --font-main: 'Inter', sans-serif;
+  --font-main: 'Outfit', sans-serif;
   
   /* Layout & Spacing */
   --sidebar-width: 280px;
@@ -58,11 +58,6 @@ body {
   background-color: var(--bg-color);
   color: var(--text-primary);
   min-height: 100vh;
-  /* Premium radial gradient background */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 25%);
-  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -118,22 +113,19 @@ h1, h2, h3, h4, h5, h6 {
    BUTTONS & INPUTS
 -------------------------------- */
 .btn-primary {
-  background: var(--accent-purple);
+  background: transparent;
   color: #fff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 10px 20px;
   font-weight: 500;
   font-family: var(--font-main);
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: 0 0 15px var(--accent-purple-glow);
 }
 
 .btn-primary:hover {
-  background: #7C3AED;
-  box-shadow: 0 0 25px var(--accent-purple-glow);
-  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .btn-glass {

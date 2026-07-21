@@ -138,7 +138,7 @@ function Sidebar() {
               right: 0,
               bottom: 0,
               width: '340px',
-              background: 'rgba(11, 13, 23, 0.98)',
+              background: 'rgba(0, 0, 0, 0.98)',
               backdropFilter: 'blur(20px)',
               borderLeft: '1px solid rgba(255,255,255,0.05)',
               boxShadow: '-10px 0 40px rgba(0,0,0,0.6)',
