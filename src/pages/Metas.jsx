@@ -65,8 +65,9 @@ function Metas() {
        const gastosPorCat = {};
        todasTrans.forEach(t => {
          if (t.dataHora && t.dataHora.startsWith(prefixoMes) && t.tipoMovimentacao === 'DESPESA') {
-           if (!gastosPorCat[t.categoriaId]) gastosPorCat[t.categoriaId] = 0;
-           gastosPorCat[t.categoriaId] += t.valor;
+           const catNome = (t.categoriaNome || 'Outros').toLowerCase();
+           if (!gastosPorCat[catNome]) gastosPorCat[catNome] = 0;
+           gastosPorCat[catNome] += t.valor;
          }
        });
 
@@ -77,14 +78,15 @@ function Metas() {
        metasRes.data
          .filter(m => m.mesAnoReferencia === prefixoMes)
          .forEach(m => {
-           if (!categoriasVistas.has(m.categoriaId)) {
-             categoriasVistas.add(m.categoriaId);
+           const catNome = (m.categoriaNome || 'Outros').toLowerCase();
+           if (!categoriasVistas.has(catNome)) {
+             categoriasVistas.add(catNome);
              metasMapeadas.push({
                id: m.id,
                categoriaId: m.categoriaId,
                categoria: m.categoriaNome,
                limite: m.valorLimite,
-               gasto: gastosPorCat[m.categoriaId] || 0,
+               gasto: gastosPorCat[catNome] || 0,
                color: cores[metasMapeadas.length % cores.length]
              });
            }
@@ -405,7 +407,7 @@ function Metas() {
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {transacoes
-                          .filter(t => t.categoriaId === meta.categoriaId && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA')
+                          .filter(t => (t.categoriaNome || '').toLowerCase() === meta.categoria.toLowerCase() && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA')
                           .map(t => (
                             <div 
                               key={t.id} 
@@ -435,7 +437,7 @@ function Metas() {
                               </span>
                             </div>
                           ))}
-                        {transacoes.filter(t => t.categoriaId === meta.categoriaId && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA').length === 0 && (
+                        {transacoes.filter(t => (t.categoriaNome || '').toLowerCase() === meta.categoria.toLowerCase() && t.dataHora && t.dataHora.startsWith(selectedDate.substring(0, 7)) && t.tipoMovimentacao === 'DESPESA').length === 0 && (
                           <div className="text-muted" style={{ fontSize: '0.85rem', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
                             Nenhuma despesa registrada nesta categoria no mês selecionado.
                           </div>

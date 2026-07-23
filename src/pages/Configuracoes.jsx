@@ -85,6 +85,13 @@ function Configuracoes() {
   const [activeTab, setActiveTab] = useState('menu');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteCountdown, setDeleteCountdown] = useState(5);
+  const [totalBancos, setTotalBancos] = useState(0);
+
+  useEffect(() => {
+    api.get('/contas')
+      .then(res => setTotalBancos(res.data.length))
+      .catch(err => console.error(err));
+  }, []);
 
   useEffect(() => {
     let timer;
@@ -96,9 +103,6 @@ function Configuracoes() {
 
   const iniciais = user ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
   const nomeUsuario = user ? user.name : 'Usuário';
-
-  /* Conta quantas carteiras existem (mock) */
-  const totalBancos = 4;
 
   if (activeTab === 'profile') return <section style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}><ProfileSettings user={user} onBack={() => setActiveTab('menu')} /></section>;
   if (activeTab === 'preferences') return <section style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}><PreferencesSettings onBack={() => setActiveTab('menu')} /></section>;

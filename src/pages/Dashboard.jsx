@@ -107,7 +107,7 @@ function RitmoGastosCard({ despesasTotais, transacoes }) {
               </linearGradient>
             </defs>
             <XAxis dataKey="dia" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} minTickGap={20} />
-            <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} />
+            <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tick={false} />
             <Tooltip 
               contentStyle={{ background: 'var(--tooltip-bg)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
               itemStyle={{ color: 'var(--accent-rose)' }}

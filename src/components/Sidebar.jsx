@@ -3,13 +3,23 @@ import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { IconChart, IconCard, IconMoney, IconSettings, IconTarget, IconUsers, IconBell } from './Icons';
+import api from '../services/api';
 
 function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notificacoes, setNotificacoes] = useState([]);
   const profileRef = useRef(null);
+
+  useEffect(() => {
+    if (user) {
+      api.get('/notificacoes')
+        .then(res => setNotificacoes(res.data || []))
+        .catch(err => console.error('Erro ao buscar notificações:', err));
+    }
+  }, [user]);
 
   // Fecha os dropdowns ao clicar fora
   useEffect(() => {
@@ -122,12 +132,14 @@ function Sidebar() {
         {/* Notificações */}
         <div style={{ position: 'relative', marginLeft: '8px', flexShrink: 0 }}>
           <button 
-            className="btn-glass" 
+            className="btn-glass bell-btn" 
             style={{ width: '40px', height: '40px', padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}
             onClick={(e) => { e.stopPropagation(); setNotifOpen(!notifOpen); setDropdownOpen(false); }}
           >
             <IconBell size={18} color="var(--text-primary)" />
-            <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--accent-rose)', width: '6px', height: '6px', borderRadius: '50%' }}></span>
+            {notificacoes.length > 0 && (
+              <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--accent-rose)', width: '6px', height: '6px', borderRadius: '50%' }}></span>
+            )}
           </button>
           {/* Novo Notification Drawer (Painel Lateral) via Portal */}
           {createPortal(
@@ -165,27 +177,26 @@ function Sidebar() {
             
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }} className="custom-scrollbar">
               
-              <Link to="/transacoes" onClick={() => setNotifOpen(false)} style={{ display: 'block', textDecoration: 'none', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-rose)', marginTop: '6px', flexShrink: 0, boxShadow: '0 0 8px var(--accent-rose)' }}></div>
-                  <div>
-                    <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Conta vencendo amanhã</strong>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>Sua fatura do cartão de crédito vence no dia 15. Evite juros!</p>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '10px' }}>Há 2 horas</span>
-                  </div>
+              {notificacoes.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  Nenhuma notificação no momento.
                 </div>
-              </Link>
-
-              <Link to="/transacoes" onClick={() => setNotifOpen(false)} style={{ display: 'block', textDecoration: 'none', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-emerald)', marginTop: '6px', flexShrink: 0, boxShadow: '0 0 8px var(--accent-emerald)' }}></div>
-                  <div>
-                    <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Transferência recebida</strong>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>Você recebeu um PIX de R$ 250,00 de João Silva.</p>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '10px' }}>Ontem</span>
+              ) : (
+                notificacoes.map(notif => (
+                  <div key={notif.id} style={{ display: 'block', textDecoration: 'none', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-emerald)', marginTop: '6px', flexShrink: 0, boxShadow: '0 0 8px var(--accent-emerald)' }}></div>
+                      <div>
+                        <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Notificação</strong>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>{notif.mensagem}</p>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '10px' }}>
+                          {notif.dataEnvio ? new Date(notif.dataEnvio).toLocaleDateString('pt-BR') : ''}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                ))
+              )}
 
             </div>
           </div>,
